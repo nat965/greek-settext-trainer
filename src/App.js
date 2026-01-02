@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { sections } from "./texts";
 import confetti from 'canvas-confetti';
 
@@ -44,8 +44,16 @@ export default function App() {
   const [showFinishedPopup, setShowFinishedPopup] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [mistakePositions, setMistakePositions] = useState([]);
+  const [streak, setStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
+  const [xp, setXp] = useState(0);
+  const [shakeInput, setShakeInput] = useState(false);
+  const [gradePulse, setGradePulse] = useState(false);
+  const [toast, setToast] = useState(null);
 
   const inputRef = useRef(null);
+  const prevGradeRef = useRef(null);
+  const prevLevelRef = useRef(null);
 
   const normalize = (str) =>
     str.normalize("NFD")
@@ -73,12 +81,25 @@ export default function App() {
     if (value.endsWith(" ")) {
       const typed = normalize(value.trim());
       const correctWord = normalize(targetWords[userWords.length] || "");
-  
+
       if (typed === correctWord || levenshtein(typed, correctWord) <= 1) {
         setUserWords((prev) => [...prev, targetWords[userWords.length]]);
+        setStreak(prev => {
+          const next = prev + 1;
+          setBestStreak(bs => Math.max(bs, next));
+          if (next % 10 === 0) {
+            confetti({
+              particleCount: 40,
+              spread: 45,
+              origin: { y: 0.72 }
+            });
+          }
+          return next;
+        });
+        setXp(prev => prev + 1);
         setCurrentWord("");
         setFeedback("Correct");
-  
+
         if (userWords.length + 1 === targetWords.length) {
           setShowFinishedPopup(true);
           confetti({
@@ -89,6 +110,9 @@ export default function App() {
         }
       } else {
         setFeedback("Try again.");
+setShakeInput(true);
+setTimeout(() => setShakeInput(false), 240);
+setStreak(0);
         if (!mistakePositions.includes(userWords.length)) {
           setMistakePositions((prev) => [...prev, userWords.length]);
         }
@@ -128,6 +152,8 @@ export default function App() {
     if (userWords.length < targetWords.length) {
       const nextWord = targetWords[userWords.length];
       setUserWords(prev => [...prev, nextWord]);
+      setStreak(0);
+      setXp(prev => Math.max(prev - 5, 0));
       setCurrentWord("");
       setFeedback("Word revealed.");
     }
@@ -155,6 +181,9 @@ export default function App() {
     setFeedback("");
     setMistakes(0);
     setMistakePositions([]);
+    setStreak(0);
+    setBestStreak(0);
+    setXp(0);
   };
   
   const handleResetMistakes = () => {
@@ -176,6 +205,51 @@ export default function App() {
     const safeProgress = Math.min((userWords.length / totalWords) * 100, 100);
     return Math.round(safeProgress);
   })();
+
+  const accuracy = (() => {
+    const correct = userWords.length;
+    const total = correct + mistakes;
+    if (total === 0) return 100;
+    return Math.round((correct / total) * 100);
+  })();
+
+  const grade = (() => {
+    if (accuracy === 100 && mistakes === 0) return "S";
+    if (accuracy >= 95) return "A";
+    if (accuracy >= 85) return "B";
+    return "C";
+  })();
+
+  const level = Math.floor(xp / 200) + 1;
+  const flameSpeedMs = streak >= 15 ? 450 : streak >= 5 ? 650 : 900;
+
+  useEffect(() => {
+    // Grade pulse when grade improves (C→B→A→S)
+    const order = { C: 0, B: 1, A: 2, S: 3 };
+    const prev = prevGradeRef.current;
+    if (prev && order[grade] > order[prev]) {
+      setGradePulse(true);
+      const t = setTimeout(() => setGradePulse(false), 300);
+      return () => clearTimeout(t);
+    }
+    prevGradeRef.current = grade;
+  }, [grade]);
+
+  useEffect(() => {
+    // Level-up toast
+    const prev = prevLevelRef.current;
+    if (prev && level > prev) {
+      setToast(`LEVEL ${level}!`);
+      confetti({
+        particleCount: 70,
+        spread: 60,
+        origin: { y: 0.65 }
+      });
+      const t = setTimeout(() => setToast(null), 1200);
+      return () => clearTimeout(t);
+    }
+    prevLevelRef.current = level;
+  }, [level]);
 
   const formatGreek = () => {
     if (selectedSectionIdx === null) return "";
@@ -216,6 +290,201 @@ export default function App() {
       fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
       lineHeight: "1.6"
     }}>
+      <style>{`
+        @keyframes pop {
+          0% { transform: scale(1); }
+          30% { transform: scale(1.15); }
+          60% { transform: scale(0.98); }
+          100% { transform: scale(1); }
+        }
+
+        @keyframes flicker {
+          0%   { transform: translateY(0) scale(1); filter: drop-shadow(0 0 6px rgba(255,120,0,.55)); }
+          20%  { transform: translateY(-1px) scale(1.02); filter: drop-shadow(0 0 10px rgba(255,120,0,.8)); }
+          40%  { transform: translateY(0) scale(.99); filter: drop-shadow(0 0 6px rgba(255,80,0,.6)); }
+          60%  { transform: translateY(-2px) scale(1.03); filter: drop-shadow(0 0 12px rgba(255,170,0,.85)); }
+          80%  { transform: translateY(0) scale(1.01); filter: drop-shadow(0 0 8px rgba(255,120,0,.7)); }
+          100% { transform: translateY(-1px) scale(1); filter: drop-shadow(0 0 6px rgba(255,120,0,.55)); }
+        }
+
+        @keyframes shimmer {
+          0% { background-position: 0% 50%; }
+          100% { background-position: 100% 50%; }
+        }
+
+        .hud {
+          display: flex;
+          gap: 14px;
+          align-items: center;
+          flex-wrap: wrap;
+          justify-content: center;
+          margin-top: 10px;
+        }
+
+        .statCard {
+          background: rgba(255,255,255,0.75);
+          border: 1px solid rgba(0,0,0,0.08);
+          border-radius: 12px;
+          padding: 10px 14px;
+          box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+          display: inline-flex;
+          align-items: baseline;
+          gap: 10px;
+        }
+
+        .label {
+          font-size: 12px;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          color: rgba(0,0,0,0.55);
+          font-weight: 700;
+        }
+
+        .value {
+          font-size: 22px;
+          font-weight: 800;
+          font-family: ui-rounded, system-ui, -apple-system, "Inter", "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .valuePop {
+          animation: pop 240ms ease-out;
+        }
+
+        .flame {
+          display: inline-block;
+          margin-right: 6px;
+          animation: flicker 900ms infinite ease-in-out;
+          transform-origin: 50% 80%;
+        }
+
+        .xpText {
+          font-weight: 900;
+          background: linear-gradient(90deg, #6a11cb, #2575fc, #6a11cb);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          background-size: 200% 200%;
+          animation: shimmer 2.2s linear infinite;
+        }
+
+        .gradeBadge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 34px;
+          height: 34px;
+          padding: 0 10px;
+          border-radius: 999px;
+          border: 1px solid rgba(0,0,0,0.12);
+          font-weight: 900;
+          font-size: 18px;
+          letter-spacing: 0.04em;
+        }
+
+        .gradeS { background: rgba(255, 215, 0, 0.25); }
+        .gradeA { background: rgba(76, 175, 80, 0.20); }
+        .gradeB { background: rgba(255, 152, 0, 0.20); }
+        .gradeC { background: rgba(244, 67, 54, 0.18); }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          20% { transform: translateX(-6px); }
+          40% { transform: translateX(6px); }
+          60% { transform: translateX(-4px); }
+          80% { transform: translateX(4px); }
+        }
+
+        .shake {
+          animation: shake 220ms ease-in-out;
+        }
+
+        @keyframes badgePulse {
+          0% { transform: scale(1); }
+          40% { transform: scale(1.18); }
+          100% { transform: scale(1); }
+        }
+
+        .gradePulse {
+          animation: badgePulse 260ms ease-out;
+        }
+
+        @keyframes toast {
+          0% { opacity: 0; transform: translateY(10px) scale(.98); }
+          20% { opacity: 1; transform: translateY(0) scale(1.02); }
+          100% { opacity: 0; transform: translateY(-6px) scale(1); }
+        }
+
+        .toast {
+          position: fixed;
+          top: 18px;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 10px 14px;
+          border-radius: 999px;
+          border: 1px solid rgba(0,0,0,0.12);
+          background: rgba(255,255,255,0.95);
+          box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          font-size: 14px;
+          z-index: 10000;
+          animation: toast 1200ms ease-out;
+        }
+
+        .bar {
+          position: relative;
+          overflow: hidden;
+        }
+          /* Fluid progress fill (animate the filled part, not the whole container) */
+.fillGreen {
+  position: relative;
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #2e7d32, #66bb6a, #2e7d32);
+  background-size: 200% 100%;
+  animation: barFlow 1.8s linear infinite;
+  transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: width;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18), 0 6px 16px rgba(76,175,80,0.25);
+}
+.fillGreen::before {
+  content: "";
+  position: absolute;
+  right: -10px;
+  top: 0;
+  width: 20px;
+  height: 100%;
+  background: radial-gradient(circle at left, rgba(255,255,255,0.38), transparent 62%);
+  filter: blur(2px);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.fillGreen::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60px;
+  width: 60px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  animation: glossSweep 1.9s ease-in-out infinite;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+@keyframes barFlow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes glossSweep {
+  0% { left: -60px; opacity: 0.0; }
+  20% { opacity: 0.55; }
+  100% { left: calc(100% + 60px); opacity: 0.0; }
+}
+      `}</style>
+      {toast && <div className="toast">{toast}</div>}
       {selectedSectionIdx === null && (
         <div>
           <h2 style={{ fontWeight: "600", fontSize: "28px", marginBottom: "20px", textAlign: "center" }}>
@@ -557,6 +826,7 @@ export default function App() {
 
           <input
             ref={inputRef}
+            className={shakeInput ? "shake" : ""}
             type="text"
             placeholder="Type next English word, then space..."
             value={currentWord}
@@ -594,16 +864,30 @@ export default function App() {
             }}>
               Reveal Word
             </button>
-            <span style={{ fontSize: "14px", color: "#555" }}>
-              Mistakes: {mistakes}
-            </span>
+            <div className="hud" style={{ width: "100%" }}>
+              <div className="statCard">
+                <span className="label">Mistakes</span>
+                <span className={`value ${mistakes > 0 ? "valuePop" : ""}`}>{mistakes}</span>
+              </div>
+
+              <div className="statCard">
+                <span className="label">Streak</span>
+                <span className="value">
+                  <span className="flame" style={{ animationDuration: `${flameSpeedMs}ms` }}>🔥</span>
+                  <span className={streak > 0 ? "valuePop" : ""}>{streak}</span>
+                  <span style={{ fontSize: "14px", fontWeight: 700, marginLeft: "8px", color: "rgba(0,0,0,0.55)" }}>
+                    Best {bestStreak}
+                  </span>
+                </span>
+              </div>
+            </div>
           </div>
 
           <p style={{ marginTop: "12px", fontSize: "18px", fontWeight: "600" }}>
             {feedback}
           </p>
 
-          <div style={{
+          <div className="bar" style={{
             background: "#ddd",
             height: "20px",
             width: "100%",
@@ -611,18 +895,69 @@ export default function App() {
             borderRadius: "10px",
             overflow: "hidden"
           }}>
-            <div style={{
-              height: "100%",
-              background: "#4caf50",
-              width: `${progress}%`,
-              transition: "width 0.4s ease",
-              borderRadius: "10px"
-            }}></div>
+            <div
+  className="fillGreen"
+  style={{ width: `${progress}%` }}
+></div>
           </div>
 
           <p style={{ textAlign: "center", marginTop: "8px", fontSize: "14px" }}>
             {progress}% complete
           </p>
+          <div className="bar" style={{
+            background: "#ddd",
+            height: "14px",
+            width: "100%",
+            marginTop: "10px",
+            borderRadius: "10px",
+            overflow: "hidden"
+          }}>
+            <div style={{
+              height: "100%",
+              background: "#2196f3",
+              width: `${accuracy}%`,
+              transition: "width 0.4s ease",
+              borderRadius: "10px"
+            }}></div>
+          </div>
+
+          <p style={{ textAlign: "center", marginTop: "6px", fontSize: "14px" }}>
+            {accuracy}% accuracy
+          </p>
+          <div className="hud" style={{ marginTop: "12px" }}>
+            <div className="statCard">
+              <span className="label">Grade</span>
+              <span className={`gradeBadge ${gradePulse ? "gradePulse" : ""} ${grade === "S" ? "gradeS" : grade === "A" ? "gradeA" : grade === "B" ? "gradeB" : "gradeC"}`}>{grade}</span>
+            </div>
+
+            <div className="statCard">
+              <span className="label">Level</span>
+              <span className="value">{level}</span>
+            </div>
+
+            <div className="statCard">
+              <span className="label">XP</span>
+              <span className={`value xpText ${xp > 0 ? "valuePop" : ""}`}>{xp}</span>
+            </div>
+          </div>
+          <div style={{
+            marginTop: "10px",
+            fontSize: "13px",
+            color: "#555",
+            textAlign: "center",
+            lineHeight: "1.4"
+          }}>
+            <strong>Grade key:</strong> S = 100% accuracy, no mistakes · A ≥ 95% · B ≥ 85% · C &lt; 85%
+          </div>
+          <div style={{
+            marginTop: "6px",
+            fontSize: "13px",
+            color: "#555",
+            textAlign: "center",
+            lineHeight: "1.4"
+          }}>
+            <strong>XP system:</strong> +1 XP per correct word · −5 XP per reveal · Levels increase every 200 XP
+          </div>
           {sections[selectedSectionIdx].styleNotes && (
             <div style={{ marginTop: "20px", textAlign: "center" }}>
               <button
