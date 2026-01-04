@@ -110,7 +110,7 @@ export const sections = [
           ],
           english: [
             "Now, on the one hand, if the Babylonians had known beforehand or had learnt what was being done by Cyrus,",
-            "allowing the Persians to come in to the city they would have destroyed them very badly."
+            "allowing the Persians to come into the city they would have destroyed them very badly."
           ]
         },
         {
@@ -122,7 +122,7 @@ export const sections = [
           ],
           english: [
             "For having shut up all the little gates leading to the river,",
-            "and themselves having gone up on to the walls which extended alongside the banks of the river,",
+            "and themselves having gone up onto the walls which extended alongside the banks of the river,",
             "they would have taken them as in a fish trap."
           ]
         },
@@ -240,7 +240,7 @@ export const sections = [
           ],
           english: [
             "and then when she was sold, having fetched much gold, he auctioned another who was the most good-looking after her.",
-            "But they were sold on condition of marriage. Indeed, as many of the Babylonian men who were prosperous and ready to marry, these men outbidding each other, would buy the most beautiful women."
+            "But they were sold on condition of marriage. Indeed, as many of the Babylonian men who were prosperous and ready to marry, these men outbidding each-other, would buy the most beautiful women."
           ]
         },
         {
@@ -362,10 +362,17 @@ export const sections = [
           name: "XIV (b): Megacles Chosen – Part Two: Set 4",
           greek: [
             "Κλεισθένης δὲ, τὸ μὲν πρῶτον ὀρχομένου αὐτοῦ, ἀποστυγῶν γαμβρὸν ἂν γενέσθαι ἑαυτῷ Ἱπποκλείδην διὰ τὴν τε ὄρχησιν καὶ τὴν ἀναίδειαν, κατέσχεν ἑαυτόν, οὐ βουλόμενος ἐκραγῆναι εἰς αὐτόν·",
-            "ὡς δὲ εἶδε τοὺς σκέλεσι χειρονομοῦντα, οὐκέτι κατέσχεν δυνάμενος εἶπεν, “ὦ παῖ Τισάνδρου, ἦσθα γὰρ τὸν χορὸν ἀπορχόμενος μετὰ τοῦ γάμου.” ὁ δὲ Ἱπποκλείδης ὑπολαβὼν εἶπεν, “οὐ φροντίς Ἱπποκλείδῃ.”"
           ],
           english: [
             "And Cleisthenes, while he (Hippocleides) was dancing the first measure, hating the thought that Hippocleides would become his son-in-law on account of both the dancing and the shamelessness, restrained himself, not wanting to make an outburst towards him.",
+          ]
+        },
+        {
+          name: "XIV (b): Megacles Chosen – Part Two: Set 5",
+          greek: [
+            "ὡς δὲ εἶδε τοὺς σκέλεσι χειρονομοῦντα, οὐκέτι κατέσχεν δυνάμενος εἶπεν, “ὦ παῖ Τισάνδρου, ἦσθα γὰρ τὸν χορὸν ἀπορχόμενος μετὰ τοῦ γάμου.” ὁ δὲ Ἱπποκλείδης ὑπολαβὼν εἶπεν, “οὐ φροντίς Ἱπποκλείδῃ.”"
+          ],
+          english: [
             "But when he saw him gesticulating with his legs, being no longer able to restrain (himself) he said “Oh, son of Tisander, yes indeed, you have danced away your marriage.” And Hippocleides answering said: “It is of no concern to Hippocleides.”"
           ]
         }
@@ -377,23 +384,16 @@ export const sections = [
         {
           name: "How Megacles was chosen by Cleisthenes – Part 3 (1)",
           greek: [
-            "ὁ δὲ Κλεισθένης σιγὴν ποιησάμενος ἔλεξεν εἰς μέσον τάδε, “ἄνδρες παιδὸς τῆς ἐμῆς μνηστῆρες, ἐγὼ καὶ πάντας ὑμᾶς ἐπαινῶ, καὶ πᾶσιν ὑμῖν, εἰ οἷόν τε εἴη, χαριζοίμην ἄν,"
+            "ὁ δὲ Κλεισθένης σιγὴν ποιησάμενος ἔλεξεν εἰς μέσον τάδε, “ἄνδρες παιδὸς τῆς ἐμῆς μνηστῆρες, ἐγὼ καὶ πάντας ὑμᾶς ἐπαινῶ, καὶ πᾶσιν ὑμῖν, εἰ οἷόν τε εἴη, χαριζοίμην ἄν,",
+            "μὴτ’ ἕνα ὑμῶν ἐξαίρετον ἀποκρίνων, μὴτε τοὺς λοιποὺς ἀποδοκιμάζων."
           ],
           english: [
-            'And Cleisthenes having procured silence said these things into their midst: "You men who are suitors to my daughter, I both praise you all and I would please you all, if I was able..."'
+            'And Cleisthenes having procured silence said these things into their midst: "You men who are suitors to my daughter, I both praise you all and I would please you all, if I was able,',
+            'neither selecting a chosen one of you, nor rejecting the rest."'
           ]
         },
         {
           name: "How Megacles was chosen by Cleisthenes – Part 3 (2)",
-          greek: [
-            "μὴτ’ ἕνα ὑμῶν ἐξαίρετον ἀποκρίνων, μὴτε τοὺς λοιποὺς ἀποδοκιμάζων."
-          ],
-          english: [
-            '...neither selecting a chosen one of you, nor rejecting the rest."'
-          ]
-        },
-        {
-          name: "How Megacles was chosen by Cleisthenes – Part 3 (3)",
           greek: [
             "ἀλλ’, οὐ γὰρ οἷός τ’ εἰμι μιᾶς περὶ παρθένου βουλεύων πᾶσι κατὰ νοῦν ποιεῖν,"
           ],
@@ -402,7 +402,7 @@ export const sections = [
           ]
         },
         {
-          name: "How Megacles was chosen by Cleisthenes – Part 3 (4)",
+          name: "How Megacles was chosen by Cleisthenes – Part 3 (3)",
           greek: [
             "τοῖς μὲν ὑμῶν ἀπελαυνομένοις τοῦδε τοῦ γάμου τάλαντον ἀργυρίου ἑκάστῳ δωρεὰν δίδωμι,"
           ],
@@ -411,7 +411,7 @@ export const sections = [
           ]
         },
         {
-          name: "How Megacles was chosen by Cleisthenes – Part 3 (5)",
+          name: "How Megacles was chosen by Cleisthenes – Part 3 (4)",
           greek: [
             "τῷ δὲ Μεγακλεῖ τῷ Ἀλκμαίωνος ἐγγυῶ παῖδα τὴν ἐμὴν Ἀγαρίστην.”"
           ],
