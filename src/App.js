@@ -10,6 +10,17 @@ const sectionImages = {
   "Lines 41–end": "/images/greek5.png"
 };
 
+function idxToLetters(n) {
+  // 0 -> A, 1 -> B, ... 25 -> Z, 26 -> AA, etc.
+  let s = "";
+  let x = n;
+  while (x >= 0) {
+    s = String.fromCharCode((x % 26) + 65) + s;
+    x = Math.floor(x / 26) - 1;
+  }
+  return s;
+}
+
 function levenshtein(a, b) {
   const an = a.length;
   const bn = b.length;
@@ -222,6 +233,33 @@ setStreak(0);
 
   const level = Math.floor(xp / 200) + 1;
   const flameSpeedMs = streak >= 15 ? 450 : streak >= 5 ? 650 : 900;
+
+  // Group sections into prose and verse sets for selection screen
+  const groupedSets = (() => {
+    const prose = [];
+    const verse = [];
+
+    sections.forEach((section, idx) => {
+      const t = section.type || "prose";
+      if (t === "verse") verse.push({ idx, section });
+      else prose.push({ idx, section });
+    });
+
+    const proseItems = prose.map((item, i) => ({
+      ...item,
+      buttonLabel: item.section.buttonLabel || String(i + 1),
+    }));
+
+    const verseItems = verse.map((item, i) => ({
+      ...item,
+      buttonLabel: item.section.buttonLabel || idxToLetters(i),
+    }));
+
+    const groups = [];
+    if (proseItems.length) groups.push({ title: "Prose", items: proseItems });
+    if (verseItems.length) groups.push({ title: "Verse", items: verseItems });
+    return groups;
+  })();
 
   useEffect(() => {
     // Grade pulse when grade improves (C→B→A→S)
@@ -491,13 +529,12 @@ setStreak(0);
             Choose a Set Text
           </h2>
 
-          {[
-  { title: "Tales from Herodotus, Selections", start: 0, end: sections.length, remove: "" }
-].map((group, groupIdx) => (
+          {groupedSets.map((group, groupIdx) => (
             <div key={groupIdx} style={{ marginBottom: "40px" }}>
               <h3 style={{ fontWeight: "500", fontSize: "24px", marginBottom: "15px", textAlign: "center" }}>
                 {group.title}
               </h3>
+
               <div style={{
                 display: "flex",
                 flexWrap: "wrap",
@@ -505,10 +542,10 @@ setStreak(0);
                 justifyContent: "center",
                 marginBottom: "30px"
               }}>
-                {sections.slice(group.start, group.end).map((section, idx) => (
+                {group.items.map(({ idx, buttonLabel }) => (
                   <button
-                    key={group.start + idx}
-                    onClick={() => setSelectedSectionIdx(group.start + idx)}
+                    key={idx}
+                    onClick={() => setSelectedSectionIdx(idx)}
                     style={{
                       padding: "12px 20px",
                       backgroundColor: "#f0f0f0",
@@ -520,22 +557,49 @@ setStreak(0);
                       textAlign: "center"
                     }}
                   >
-                    {`${group.start + idx + 1}`}
+                    {buttonLabel}
                   </button>
                 ))}
               </div>
-              <div style={{ textAlign: "center", marginTop: "20px" }}>
-                <p><strong>Section Mapping:</strong></p>
-                <p>1 = XI (a): First capture of Babylon by Cyrus: Part one</p>
-                <p>2 = XI (a): First capture of Babylon by Cyrus: Part two</p>
-                <p>3 = XI (b): XI (a): First capture of Babylon by Cyrus: Part three</p>
-                <p>4 = XI (c): XII: Rebuff to Darius for disturbing the tomb of Queen Nitocris</p>
-                <p>5 = XIII: The Babylonian wife market</p>
-                <p>6 = XIV (b): How Megacles was chosen by Cleisthenes as the best match for his daughter: Part one</p>
-                <p>7 = XIV (b): How Megacles was chosen by Cleisthenes as the best match for his daughter: Part two</p>
-                <p>8 = XIV (b): How Megacles was chosen by Cleisthenes as the best match for his daughter: Part three</p>
-                {/* Add more lines as needed */}
-              </div>
+
+              {/* Optional mapping text per group */}
+              {group.title === "Prose" && (
+                <div style={{ textAlign: "center", marginTop: "20px" }}>
+                  <p><strong>Section Mapping:</strong></p>
+                  <p>1 = XI (a): First capture of Babylon by Cyrus: Part one</p>
+                  <p>2 = XI (a): First capture of Babylon by Cyrus: Part two</p>
+                  <p>3 = XI (b): XI (a): First capture of Babylon by Cyrus: Part three</p>
+                  <p>4 = XI (c): XII: Rebuff to Darius for disturbing the tomb of Queen Nitocris</p>
+                  <p>5 = XIII: The Babylonian wife market</p>
+                  <p>6 = XIV (b): How Megacles was chosen by Cleisthenes as the best match for his daughter: Part one</p>
+                  <p>7 = XIV (b): How Megacles was chosen by Cleisthenes as the best match for his daughter: Part two</p>
+                  <p>8 = XIV (b): How Megacles was chosen by Cleisthenes as the best match for his daughter: Part three</p>
+                </div>
+              )}
+
+              {group.title === "Verse" && (
+                <div style={{ textAlign: "center", marginTop: "20px" }}>
+                  <p><strong>Verse Mapping:</strong></p>
+                  <p>A = Lines 370-380: Hector arrives home and finds Andromache absent. He asks one of the enslaved women in his
+                  household where his wife is.</p>
+                  <p>B = Lines 381-391: One of the female workers in Hector's house informs him that Andromache has gone to the tower to
+                  watch the battle.</p>
+                  <p>C = Lines 392-403: Hector rushes off, back to the battle. He bumps into his wife and son as he is about to pass through
+                  the gates.</p>
+                  <p>D = Lines 404-413: Hector greets Astyanax, and Andromache starts her attempt to persuade Hector not to return to the
+                  front line.</p>
+                  <p>E = Lines 429-439: Andromache advises Hector to fight by the fig tree.</p>
+                  <p>F = Lines 440-449: Hector replies to Andromache, outlining that he is motivated by his desire to avoid shame and win glory.</p>
+                  <p>G = Lines 450-461: Hector explains that his main motivation is to protect Andromache from being enslaved.</p>
+                  <p>H = Lines 462-470: Hector finishes his prediction of Andromache's future and picks up Astyanax, who is frightened by his
+                  father's helmet.</p>
+                  <p>I = Lines 471-481: A warm and familial moment. Hector and Andromache laugh. Hector removes his helmet and prays
+                  to Zeus.</p>
+                  <p>J = Lines 482-493: Hector has accepted that he cannot avoid his fate. He tells Andromache to go back to her domestic tasks.</p>
+                  <p>K = Lines 494-502: Hector puts his helmet back on and returns to battle. The women begin their lamenting in his absence.</p>
+                  {/* Fill these in like your prose mapping */}
+                </div>
+              )}
             </div>
           ))}
         </div>

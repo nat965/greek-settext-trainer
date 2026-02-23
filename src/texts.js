@@ -420,6 +420,1073 @@ export const sections = [
           ]
         }
       ]
-    }
+    },
+    {
+      type: "verse",
+      buttonLabel: "A",
+      name: "Iliad Book 6 – Lines 370–380",
+      groups: [
+        {
+          label: "Practice set 1",
+          greek: [
+            "αἶψα δ’ ἔπειθ’ ἵκανε δόμους εὖ ναιετάοντας,",
+            "οὐδ’ εὗρ’ Ἀνδρομάχην λευκώλενον ἐν μεγάροισιν,"
+          ],
+          english: [
+            "And shortly Hector came to his well furnished home,",
+            "He did not find white-armed Andromache in the house"
+          ]
+        },
+        {
+          label: "Practice set 2",
+          greek: [
+            "ἀλλ’ ἥ γε ξὺν παιδὶ καὶ ἀμφιπόλῳ εὐπέπλῳ",
+            "πύργῳ ἐφεστήκει γοόωσά τε μυρομένη τε."
+          ],
+          english: [
+            "But she, with her son and a finely dressed maidservant,",
+            "Stood on the tower and was both lamenting and weeping."
+          ]
+        },
+        {
+          label: "Practice set 3",
+          greek: [
+            "Ἕκτωρ δ’ ὡς οὐκ ἔνδον ἀμύμονα τέτμεν ἄκοιτιν"
+          ],
+          english: [
+            "When Hector found his faultless wife was not inside"
+          ]
+        },
+        {
+          label: "Practice set 4",
+          greek: [
+            "ἔστη ἐπ’ οὐδὸν ἰών, μετὰ δὲ δμῳῇσιν ἔειπεν:"
+          ],
+          english: [
+            "Coming up to the threshold he stopped, and spoke with the enslaved",
+            "women:"
+          ]
+        },
+        {
+          label: "Practice set 5",
+          greek: [
+            "εἰ δ’ ἄγε μοι, δμῳαί, νημερτέα μυθήσασθε:"
+          ],
+          english: [
+            "‘Come on now, slave women, tell me the truth:"
+          ]
+        },
+        {
+          label: "Practice set 6",
+          greek: [
+            "πῇ ἔβη Ἀνδρομάχη λευκώλενος ἐκ μεγάροιο;"
+          ],
+          english: [
+            "Where has white-armed Andromache gone from the house?"
+          ]
+        },
+        {
+          label: "Practice set 7",
+          greek: [
+            "ἦέ πῃ ἐς γαλόων ἢ εἰνατέρων εὐπέπλων"
+          ],
+          english: [
+            "To the house of my sisters or one of my finely dressed sisters-in-law?"
+          ]
+        },
+        {
+          label: "Practice set 8",
+          greek: [
+            "ἢ ἐς Ἀθηναίης ἐξοίχεται, ἔνθά περ ἄλλαι",
+            "Τρῳαὶ εὐπλόκαμοι δεινὴν θεὸν ἱλάσκονται;"
+          ],
+          english: [
+            "Or has she gone out to the temple of Athena, there where the other",
+            "Lovely-haired Trojan women appease the terrible goddess?’"
+          ]
+        }
+      ]
+    },
+    {
+      type: "verse",
+      buttonLabel: "B",
+      name: "Iliad Book 6 – Lines 381–391",
+      groups: [
+        {
+          label: "Practice set 1",
+          greek: [
+            "τὸν δ’ αὖτ’ ὀτρηρὴ ταμίη πρὸς μῦθον ἔειπεν."
+          ],
+          english: [
+            "In reply to Hector’s speech, the busy housekeeper said"
+          ]
+        },
+        {
+          label: "Practice set 2",
+          greek: [
+            "“Ἕκτορ ἐπεὶ μάλ’ ἄνωγας ἀληθέα μυθήσασθαι,"
+          ],
+          english: [
+            "'Hector, since you have indeed commanded me to tell the truth,"
+          ]
+        },
+        {
+          label: "Practice set 3",
+          greek: [
+            "οὔτέ πῃ ἐς γαλόων οὔτ’ εἰνατέρων εὐπέπλων",
+            "οὔτ’ ἐς Ἀθηναίης ἐξοίχεται, ἔνθά περ ἄλλαι"
+          ],
+          english: [
+            "She has not gone to one of your sisters’ or finely dressed sister-in-laws’",
+            "houses",
+            "nor has she gone out to the temple of Athena, where the other"
+          ]
+        },
+        {
+          label: "Practice set 4",
+          greek: [
+            "Τρῳαὶ εὐπλόκαμοι δεινὴν θεὸν ἱλάσκονται,"
+          ],
+          english: [
+            "Lovely-haired Trojan women appease the terrible goddess,"
+          ]
+        },
+        {
+          label: "Practice set 5",
+          greek: [
+            "ἀλλ’ ἐπὶ πύργον ἔβη μέγαν Ἰλίου, οὕνεκ’ ἄκουσε"
+          ],
+          english: [
+            "But she has gone up the great tower of Ilium because she heard"
+          ]
+        },
+        {
+          label: "Practice set 6",
+          greek: [
+            "τείρεσθαι Τρῶας, μέγα δὲ κράτος εἶναι Ἀχαιῶν."
+          ],
+          english: [
+            "The Trojans were hard-pressed, and that the force of the Greeks was great."
+          ]
+        },
+        {
+          label: "Practice set 7",
+          greek: [
+            "ἣ μὲν δὴ πρὸς τεῖχος ἐπειγομένη ἀφικάνει"
+          ],
+          english: [
+            "Indeed she, charging like a woman possessed, has reached the wall."
+          ]
+        },
+        {
+          label: "Practice set 8",
+          greek: [
+            "μαινομένῃ εἰκυῖα· φέρει δ’ ἅμα παῖδα τιθήνη.’"
+          ],
+          english: [
+            "The nurse went with her, carrying your son.'"
+          ]
+        },
+        {
+          label: "Practice set 9",
+          greek: [
+            "ἦ ῥα γυνὴ ταμίη, ὁ δ’ ἀπέσσυτο δώματος Ἕκτωρ",
+            "τὴν αὐτὴν ὁδὸν αὖτις εὐκτιμένας κατ’ ἀγυιάς."
+          ],
+          english: [
+            "The housekeeper spoke, and Hector dashed out of the house",
+            "back the way he had come again through the well-built streets."
+          ]
+        }
+      ]
+    },
+    {
+      type: "verse",
+      buttonLabel: "C",
+      name: "Iliad Book 6 – Lines 392–403",
+      groups: [
+        {
+          label: "Practice set 1",
+          greek: [
+            "εὖτε πύλας ἵκανε διερχόμενος μέγα ἄστυ",
+            "Σκαιάς, τῇ ἄρ’ ἔμελλε διεξίμεναι πεδίονδε,",
+            "ἔνθ’ ἄλοχος πολυδῶρος ἐναντίη ἦλθε θέουσα"
+          ],
+          english: [
+            "When he came to the Scaean Gate, going through the great city,",
+            "By which he was to pass through that gate onto the battlefield,",
+            "There, his wife, Andromache, who had brought a rich dowry, came up",
+            "to him at a run."
+          ]
+        },
+        {
+          label: "Practice set 2",
+          greek: [
+            "Ἀνδρομάχη, θυγάτηρ μεγαλήτορος Ἠετίωνος,",
+            "Ἠετίων, ὃς ἔναιεν ὑπὸ Πλάκῳ ὑλήεσσῃ,",
+            "Θήβῃ Ὑποπλακίῃ, Κιλίκεσσιν ἀνδρεσσιν ἀνάσσων·"
+          ],
+          english: [
+            "She was the daughter of great-hearted Eetion,",
+            "Eetion who lived under forested Mount Placus",
+            "Ruling the Cilician people in Thebe-under-Placus:"
+          ]
+        },
+        {
+          label: "Practice set 3",
+          greek: [
+            "τοῦ περ δὴ θυγάτηρ ἔχεθ’ Ἕκτορι χαλκοκορυστῇ."
+          ],
+          english: [
+            "This man’s daughter was married to bronze-armoured Hector."
+          ]
+        },
+        {
+          label: "Practice set 4",
+          greek: [
+            "ἥ οἱ ἔπειτ’ ἤντησ’, ἅμα δ’ ἀμφίπολος κίεν αὐτῇ",
+            "παῖδ’ ἐπὶ κόλπῳ ἔχουσ’ ἀταλάφρονα, νήπιον αὔτως,",
+            "Ἐκτορίδην ἀγαπητόν, ἀλίγκιον ἀστέρι καλῷ,"
+          ],
+          english: [
+            "When she encountered him, her handmaid went with her",
+            "Holding the tender-hearted boy at her bosom, just a baby,",
+            "Hector’s beloved son, like a beautiful as a star,"
+          ]
+        },
+        {
+          label: "Practice set 5",
+          greek: [
+            "τόν ῥ’ Ἕκτωρ καλέεσκε Σκαμάνδριον, αὐτὰρ οἱ ἄλλοι"
+          ],
+          english: [
+            "Whom Hector used to call Scamandrius, but all the others"
+          ]
+        },
+        {
+          label: "Practice set 6",
+          greek: [
+            "Ἀστυάνακτ’· οἷος γὰρ ἐρύετο Ἴλιον Ἕκτωρ."
+          ],
+          english: [
+            "Astyanax: for Hector alone was the protector of Troy."
+          ]
+        }
+      ]
+    },
+    {
+      type: "verse",
+      buttonLabel: "D",
+      name: "Iliad Book 6 – Lines 404–413",
+      groups: [
+        {
+          label: "Practice set 1",
+          greek: [
+            "ἤτοι ὁ μὲν μείδησεν ἰδὼν ἐς παῖδα σιωπῇ·"
+          ],
+          english: [
+            "Hector looked at his son and smiled in silence:"
+          ]
+        },
+        {
+          label: "Practice set 2",
+          greek: [
+            "Ἀνδρομάχη δέ οἱ ἄγχι παρίστατο δάκρυ χέουσα,"
+          ],
+          english: [
+            "And Andromache, pouring forth tears, went right up to him,"
+          ]
+        },
+        {
+          label: "Practice set 3",
+          greek: [
+            "ἔν τ’ ἄρα οἱ φῦ χειρὶ ἔπος τ’ ἔφατ’ ἔκ τ’ ὀνόμαζε."
+          ],
+          english: [
+            "Grasped his hand, addressed him by name and said:"
+          ]
+        },
+        {
+          label: "Practice set 4",
+          greek: [
+            "’δαιμόνιε, φθίσει σε τὸ σὸν μένος, οὐδ’ ἐλεαίρεις"
+          ],
+          english: [
+            "'Possessed one! Your courage will destroy you, and you do not pity"
+          ]
+        },
+        {
+          label: "Practice set 5",
+          greek: [
+            "παῖδά τε νηπίαχον καὶ ἐμ’ ἄμμορον, ἢ τάχα χήρη"
+          ],
+          english: [
+            "Your infant son or unfortunate me, soon to be your widow,"
+          ]
+        },
+        {
+          label: "Practice set 6",
+          greek: [
+            "σεῦ ἔσομαι· τάχα γάρ σε κατακτανέουσιν Ἀχαιοί·"
+          ],
+          english: [
+            "For soon the Achaeans will kill you,"
+          ]
+        },
+        {
+          label: "Practice set 7",
+          greek: [
+            "πάντες ἐφορμηθέντες· ἐμοὶ δέ κε κέρδιον εἴη"
+          ],
+          english: [
+            "Having attacked all together; and it would be better for me"
+          ]
+        },
+        {
+          label: "Practice set 8",
+          greek: [
+            "σεῦ ἀφαμαρτούσῃ χθόνα δύμεναι· οὐ γάρ ἔτ’ ἄλλη"
+          ],
+          english: [
+            "To be buried in earth if I have lost you: for there will no longer be other"
+          ]
+        },
+        {
+          label: "Practice set 9",
+          greek: [
+            "ἔσται θαλπωρή, ἐπεὶ ἄν σύ γε πότμον ἐπίσπῃς"
+          ],
+          english: [
+            "Comfort any more whenever you have met your fate,"
+          ]
+        },
+        {
+          label: "Practice set 10",
+          greek: [
+            "ἀλλ’ ἄχε· οὐδέ μοι ἔστι πατὴρ καὶ πότνια μήτηρ."
+          ],
+          english: [
+            "Nothing but pain. I have no father, or lady mother."
+          ]
+        }
+      ]
+    },
+    {
+      type: "verse",
+      buttonLabel: "E",
+      name: "Iliad Book 6 – Lines 429–439",
+      groups: [
+        {
+          label: "Practice set 1",
+          greek: [
+            "’Εκτορ ἀτὰρ σὺ μοι ἔσσι πατὴρ καὶ πότνια μήτηρ"
+          ],
+          english: [
+            "But you, Hector, are my father and lady mother"
+          ]
+        },
+        {
+          label: "Practice set 2",
+          greek: [
+            "ἠδὲ κασίγνητος, σὺ δέ μοι θαλερὸς παρακοίτης·"
+          ],
+          english: [
+            "And brother, and my stout-hearted husband;"
+          ]
+        },
+        {
+          label: "Practice set 3",
+          greek: [
+            "ἀλλ’ ἄγε νῦν ἐλέαιρε καὶ αὐτοῦ μίμν’ ἐπὶ πύργῳ,"
+          ],
+          english: [
+            "But come now, have pity, and stay here on the tower,"
+          ]
+        },
+        {
+          label: "Practice set 4",
+          greek: [
+            "μὴ παῖδ’ ὀρφανικὸν θήῃς χήρην τε γυναῖκα."
+          ],
+          english: [
+            "Do not make your son an orphan and your wife a widow;"
+          ]
+        },
+        {
+          label: "Practice set 5",
+          greek: [
+            "λαὸν δὲ στήσον παρ’ ἐρινέον, ἔνθα μάλιστα"
+          ],
+          english: [
+            "Rally the troops at the fig tree, there"
+          ]
+        },
+        {
+          label: "Practice set 6",
+          greek: [
+            "ἄμβατός ἐστι πόλις καὶ ἐπίδρομον ἔπλετο τεῖχος."
+          ],
+          english: [
+            "The city is easiest to climb and the wall has become scalable."
+          ]
+        },
+        {
+          label: "Practice set 7",
+          greek: [
+            "τρὶς γὰρ τῇ γ’ ἐλθόντες ἐπειρήσανθ’ οἱ ἄριστοι"
+          ],
+          english: [
+            "For three times their best men have come there to make an attempt,"
+          ]
+        },
+        {
+          label: "Practice set 8",
+          greek: [
+            "ἀμφ’ Αἴαντε δύο καὶ ἀγακλυτὸν Ἰδομενῆα"
+          ],
+          english: [
+            "The followers of both Ajaxes, and celebrated Idomeneus,"
+          ]
+        },
+        {
+          label: "Practice set 9",
+          greek: [
+            "ἠδ’ ἀμφ’ Ἀτρεΐδας καὶ Τυδέος ἄλκιμον υἱόν."
+          ],
+          english: [
+            "Both the sons of Atreus and the valiant son of Tydeus:"
+          ]
+        },
+        {
+          label: "Practice set 10",
+          greek: [
+            "ἤ πού τίς σφιν ἐνίστε θεοπροπίων εὖ εἰδώς,"
+          ],
+          english: [
+            "Perhaps either someone has told them who knows the oracles well,"
+          ]
+        },
+        {
+          label: "Practice set 11",
+          greek: [
+            "ἤ νυ καὶ αὐτῶν θυμὸς ἐποτρύνει καὶ ἀνώγει.’"
+          ],
+          english: [
+            "Or else their own spirit urges and commands them.'"
+          ]
+        }
+      ]
+    },
+    {
+      type: "verse",
+      buttonLabel: "F",
+      name: "Iliad Book 6 – Lines 440–449",
+      groups: [
+        {
+          label: "Practice set 1",
+          greek: [
+            "τὴν δ’ αὖτε προσεῖπε μέγας κορυθαίολος Ἕκτωρ."
+          ],
+          english: [
+            "Great Hector of the flashing helmet replied to her:"
+          ]
+        },
+        {
+          label: "Practice set 2",
+          greek: [
+            "ἦ καὶ ἐμοὶ τάδε πάντα μέλει, γύναι· ἀλλὰ μάλ’ αἰνῶς"
+          ],
+          english: [
+            "'Truly all these things are an object of care for me also, wife: but horribly"
+          ]
+        },
+        {
+          label: "Practice set 3",
+          greek: [
+            "αἰδέομαι Τρῶας καὶ Τρῳάδας ἑλκεσιπέπλους,"
+          ],
+          english: [
+            "Would I shame myself in the eyes of the Trojan men and the long-robed",
+            "Trojan women,"
+          ]
+        },
+        {
+          label: "Practice set 4",
+          greek: [
+            "αἴ κε κακὸς ὣς νόσφιν ἀλυσκάζω πολέμοιο."
+          ],
+          english: [
+            "If I were skulking away from the war like a coward:"
+          ]
+        },
+        {
+          label: "Practice set 5",
+          greek: [
+            "οὐδέ με θυμὸς ἄνωγεν, ἐπεὶ μάθον ἔμμεναι ἐσθλὸς"
+          ],
+          english: [
+            "And my heart does not command me, since I have learned to be valiant,"
+          ]
+        },
+        {
+          label: "Practice set 6",
+          greek: [
+            "αἰεὶ καὶ πρώτοισι μετὰ Τρώεσσι μάχεσθαι,"
+          ],
+          english: [
+            "And to always fight in the Trojan front line"
+          ]
+        },
+        {
+          label: "Practice set 7",
+          greek: [
+            "ἀρνύμενος πατρός τε μέγα κλέος ἠδ’ ἐμὸν αὐτοῦ."
+          ],
+          english: [
+            "Seeking great glory for my father and myself."
+          ]
+        },
+        {
+          label: "Practice set 8",
+          greek: [
+            "εὖ γὰρ ἐγὼ τόδε οἶδα κατὰ φρένα καὶ κατὰ θυμόν·"
+          ],
+          english: [
+            "For I know this well in my soul and in my heart:"
+          ]
+        },
+        {
+          label: "Practice set 9",
+          greek: [
+            "ἔσσεται ἦμαρ ὅτ’ ἄν ποτ’ ὀλώλῃ Ἴλιος ἱρὴ"
+          ],
+          english: [
+            "The day will come when sacred Ilium will be destroyed"
+          ]
+        },
+        {
+          label: "Practice set 10",
+          greek: [
+            "καὶ Πρίαμος καὶ λαὸς ἐϋμμελίω Πριάμοιο."
+          ],
+          english: [
+            "along with Priam and the people of Priam of the ashen spear."
+          ]
+        }
+      ]
+    },
+    {
+      type: "verse",
+      buttonLabel: "G",
+      name: "Iliad Book 6 – Lines 450–461",
+      groups: [
+        {
+          label: "Practice set 1",
+          greek: [
+            "ἀλλ’ οὐ μοι Τρώων τόσσον μέλει ἄλγος ὀπίσσω,"
+          ],
+          english: [
+            "But this future suffering of the Trojans is not such a great object of care"
+          ]
+        },
+        {
+          label: "Practice set 2",
+          greek: [
+            "οὔτ’ αὐτῆς Ἑκάβης οὔτε Πριάμοιο ἄνακτος"
+          ],
+          english: [
+            "Nor that of Hecuba herself or lord Priam,"
+          ]
+        },
+        {
+          label: "Practice set 3",
+          greek: [
+            "οὔτε κασιγνήτων, οἵ κεν πολέες τε καὶ ἐσθλοὶ"
+          ],
+          english: [
+            "Nor my brothers, who although both numerous and brave,"
+          ]
+        },
+        {
+          label: "Practice set 4",
+          greek: [
+            "ἐν κονίῃσι πέσοιεν ὑπ’ ἀνδράσι δυσμενέεσσιν,"
+          ],
+          english: [
+            "Will die in the dirt at the hands of hostile men,"
+          ]
+        },
+        {
+          label: "Practice set 5",
+          greek: [
+            "ὅσσον σεῦ, ὅτε κέν τις Ἀχαιῶν χαλκοχιτώνων"
+          ],
+          english: [
+            "As much as for you, whenever one of the bronze-armed Achaeans"
+          ]
+        },
+        {
+          label: "Practice set 6",
+          greek: [
+            "δακρυόεσσαν ἄγηται ἐλεύθερον ἦμαρ ἀπούρας·"
+          ],
+          english: [
+            "Leads you away in tears, depriving you of your day of freedom."
+          ]
+        },
+        {
+          label: "Practice set 7",
+          greek: [
+            "καί κεν ἐν Ἄργει ἐοῦσα πρὸς ἄλλης ἱστὸν ὑφαίνοις,"
+          ],
+          english: [
+            "And perhaps you will weave at the loom at the orders of another"
+          ]
+        },
+        {
+          label: "Practice set 8",
+          greek: [
+            "καί κεν ὕδωρ φορέοις Μεσσηίδος ἢ Ὑπερείης"
+          ],
+          english: [
+            "And you will bear water from Messeis or Hypereia,"
+          ]
+        },
+        {
+          label: "Practice set 9",
+          greek: [
+            "πολλ’ ἀεκαζομένη, κρατερὴ δ’ ἐπικείσετ’ ἀνάγκη·"
+          ],
+          english: [
+            "Much against your will, under stern compulsion."
+          ]
+        },
+        {
+          label: "Practice set 10",
+          greek: [
+            "καί ποτέ τις εἴπησιν ἰδὼν κατὰ δάκρυ χέουσαν·"
+          ],
+          english: [
+            "And when they see you pouring forth tears, perhaps someone may say"
+          ]
+        },
+        {
+          label: "Practice set 11",
+          greek: [
+            "Ἕκτορος ἥδε γυνή, ὃς ἀριστεύεσκε μάχεσθαι"
+          ],
+          english: [
+            "‘That’s the wife of Hector, who was always the best fighter,"
+          ]
+        },
+        {
+          label: "Practice set 12",
+          greek: [
+            "Τρώων ἱπποδάμων, ὅτε Ἴλιον ἀμφεμάχοντο."
+          ],
+          english: [
+            "Of the horse-taming Trojans who fought around Troy.’"
+          ]
+        }
+      ]
+    },
+    {
+      type: "verse",
+      buttonLabel: "H",
+      name: "Iliad Book 6 – Lines 462–470",
+      groups: [
+        {
+          label: "Practice set 1",
+          greek: [
+            "ὥς ποτέ τις ἐρέει· σοὶ δ’ αὖ νέον ἔσσεται ἄλγος"
+          ],
+          english: [
+            "That is what they will perhaps say, and there will be fresh pain again",
+            "for you,"
+          ]
+        },
+        {
+          label: "Practice set 2",
+          greek: [
+            "χήτει τοιοῦδ’ ἀνδρὸς ἀμύνειν δούλιον ἦμαρ."
+          ],
+          english: [
+            "Because you lack the sort of man to ward off the day of slavery."
+          ]
+        },
+        {
+          label: "Practice set 3",
+          greek: [
+            "ἀλλά με τεθνηῶτα χυτὴ κατὰ γαῖα καλύπτοι"
+          ],
+          english: [
+            "But may an earthen mound cover my dead body,"
+          ]
+        },
+        {
+          label: "Practice set 4",
+          greek: [
+            "πρίν γέ τί σῆς τε βοῆς σοῦ θ’ ἑλκηθμοῖο πυθέσθαι.’"
+          ],
+          english: [
+            "Before learning of your shouting and you being carried away.'"
+          ]
+        },
+        {
+          label: "Practice set 5",
+          greek: [
+            "ὥς εἰπὼν οὗ παιδὸς ὀρέξατο φαίδιμος Ἕκτωρ."
+          ],
+          english: [
+            "Speaking these words, glorious Hector reached out to his son,"
+          ]
+        },
+        {
+          label: "Practice set 6",
+          greek: [
+            "ἂψ δ’ ὁ παῖς πρὸς κόλπον ἐϋζώνοιο τιθήνης"
+          ],
+          english: [
+            "But the child turned away into the bosom of the well-dressed nurse"
+          ]
+        },
+        {
+          label: "Practice set 7",
+          greek: [
+            "ἐκλίνθη ἰάχων, πατρὸς φίλου ὄψιν ἀτυχθεὶς,"
+          ],
+          english: [
+            "With a cry, frightened by the appearance of his dear father,"
+          ]
+        },
+        {
+          label: "Practice set 8",
+          greek: [
+            "ταρβήσας χαλκόν τε ἰδὲ λόφον ἱππιοχαίτην,"
+          ],
+          english: [
+            "Terrified by both the bronze helmet and horsehair crest"
+          ]
+        },
+        {
+          label: "Practice set 9",
+          greek: [
+            "δεινὸν ἀπ’ ἀκροτάτης κόρυθος νεύοντα νοήσας."
+          ],
+          english: [
+            "He thought it frightening, nodding from the top of the helmet."
+          ]
+        }
+      ]
+    },
+    {
+      type: "verse",
+      buttonLabel: "I",
+      name: "Iliad Book 6 – Lines 471–481",
+      groups: [
+        {
+          label: "Practice set 1",
+          greek: [
+            "ἐκ δ’ ἐγέλασσε πατὴρ τε φίλος καὶ πότνια μήτηρ·"
+          ],
+          english: [
+            "His dear father and lady mother laughed loudly."
+          ]
+        },
+        {
+          label: "Practice set 2",
+          greek: [
+            "αὐτίκ’ ἀπὸ κρατὸς κόρυθ’ εἵλετο φαίδιμος Ἕκτωρ,"
+          ],
+          english: [
+            "Immediately, glorious Hector seized the helmet from his head,"
+          ]
+        },
+        {
+          label: "Practice set 3",
+          greek: [
+            "καὶ τὴν μὲν κατέθηκε ἐπὶ χθονὶ παμφανόωσαν·"
+          ],
+          english: [
+            "And placed it, shining brightly, on the ground."
+          ]
+        },
+        {
+          label: "Practice set 4",
+          greek: [
+            "αὐτὰρ ὅ γ’ ὃν φίλον υἱὸν ἐπεὶ κύσε πῆλέ τε χερσίν,"
+          ],
+          english: [
+            "When he kissed his dear son rocked him in his arms,"
+          ]
+        },
+        {
+          label: "Practice set 5",
+          greek: [
+            "εἶπε δ’ ἐπευξάμενος Διί τ’ ἄλλοισίν τε θεοῖσι·"
+          ],
+          english: [
+            "And praying, addressed Zeus and the other gods:"
+          ]
+        },
+        {
+          label: "Practice set 6",
+          greek: [
+            "'Ζεῦ ἄλλοι τε θεοί, δότε δὴ καὶ τόνδε γενέσθαι"
+          ],
+          english: [
+            "'Zeus and you other gods, grant that this my son will be,"
+          ]
+        },
+        {
+          label: "Practice set 7",
+          greek: [
+            "παῖδ’ ἐμόν, ὡς καὶ ἐγώ περ, ἀριπρεπέα Τρώεσσιν,"
+          ],
+          english: [
+            "Just like me, most distinguished among the Trojans,"
+          ]
+        },
+        {
+          label: "Practice set 8",
+          greek: [
+            "ὧδε βίην τ’ ἀγαθὸν, καὶ Ἰλίου ἶφι ἀνάσσειν·"
+          ],
+          english: [
+            "Just as strong and brave; and a mighty ruler of Ilium."
+          ]
+        },
+        {
+          label: "Practice set 9",
+          greek: [
+            "καί ποτέ τις εἴποι 'πατρὸς γ’ ὅδε πολλὸν ἀμείνων'"
+          ],
+          english: [
+            "And perhaps they may they say, 'this is a man far better than his father,"
+          ]
+        },
+        {
+          label: "Practice set 10",
+          greek: [
+            "ἐκ πολέμου ἀνιόντα· φέροι δ’ ἔναρα βροτόεντα"
+          ],
+          english: [
+            "As he returns from battle. May he bring bloodstained spoils"
+          ]
+        },
+        {
+          label: "Practice set 11",
+          greek: [
+            "κτείνας δήϊον ἄνδρα, χαρείη δὲ φρένα μήτηρ.'"
+          ],
+          english: [
+            "Having killed an enemy man and may his mother rejoice in her heart.'"
+          ]
+        }
+      ]
+    },
+    {
+      type: "verse",
+      buttonLabel: "J",
+      name: "Iliad Book 6 – Lines 482–493",
+      groups: [
+        {
+          label: "Practice set 1",
+          greek: [
+            "ὣς εἰπὼν ἀλόχοιο φίλης ἐν χερσὶν ἔθηκε"
+          ],
+          english: [
+            "So saying, he placed his son in the arms of his dear wife"
+          ]
+        },
+        {
+          label: "Practice set 2",
+          greek: [
+            "παῖδ’ ἑὸν· ἣ δ’ ἄρα μιν κηώδει δέξατο κόλπῳ"
+          ],
+          english: [
+            "Who received him in her sweet-smelling bosom."
+          ]
+        },
+        {
+          label: "Practice set 3",
+          greek: [
+            "δακρυόεν γελάσασα· πόσις δ’ ἐλέησε νοήσας,"
+          ],
+          english: [
+            "Laughing through tears. Her husband pitied her when he saw this"
+          ]
+        },
+        {
+          label: "Practice set 4",
+          greek: [
+            "χειρί τέ μιν κατέρειξεν, ἔπος τ’ ἔφατ’ ἔκ τ’ ὀνόμαζε·"
+          ],
+          english: [
+            "And he stroked her with his hand and addressing her by name said"
+          ]
+        },
+        {
+          label: "Practice set 5",
+          greek: [
+            "’δαιμονίη, μή μοί τι λίην ἀκαχίζεο θυμῷ·"
+          ],
+          english: [
+            "'Dearest one! Please do not despair excessively in your heart;"
+          ]
+        },
+        {
+          label: "Practice set 6",
+          greek: [
+            "οὐ γάρ τίς μ’ ὑπὲρ αἶσαν ἀνὴρ Ἄϊδι προϊάψει·"
+          ],
+          english: [
+            "For no man will send me before my allotted time down to Hades:"
+          ]
+        },
+        {
+          label: "Practice set 7",
+          greek: [
+            "μοῖραν δ’ οὔ τινά φημι πεφυγμένον ἔμμεναι ἀνδρῶν,"
+          ],
+          english: [
+            "A fate, I declare, from which no man has escaped,"
+          ]
+        },
+        {
+          label: "Practice set 8",
+          greek: [
+            "οὐ κακόν, οὐδὲ μὲν ἐσθλόν, ἐπὴν τὰ πρῶτα γένηται."
+          ],
+          english: [
+            "Neither the bad nor good, from the moment they are first born."
+          ]
+        },
+        {
+          label: "Practice set 9",
+          greek: [
+            "ἀλλ’ εἰς οἶκον ἰοῦσα τὰ σ’ αὐτῆς ἔργα κόμιζε"
+          ],
+          english: [
+            "But go into the house and look to your work,"
+          ]
+        },
+        {
+          label: "Practice set 10",
+          greek: [
+            "ἱστόν τ’ ἠλακάτην τε, καὶ ἀμφιπόλοισι κέλευε"
+          ],
+          english: [
+            "The loom and spindle and order the maids"
+          ]
+        },
+        {
+          label: "Practice set 11",
+          greek: [
+            "ἔργον ἐποίχεσθαι· πόλεμος δ’ ἄνδρεσσι μελήσει"
+          ],
+          english: [
+            "To get on with their work: war will be the care of all men,"
+          ]
+        },
+        {
+          label: "Practice set 12",
+          greek: [
+            "πᾶσι, μάλιστα δ’ ἐμοί, τοὶ Ἰλίῳ ἐγγεγάασιν.’"
+          ],
+          english: [
+            "For those born in Ilium, especially me.'"
+          ]
+        }
+      ]
+    },
+    {
+      type: "verse",
+      buttonLabel: "K",
+      name: "Iliad Book 6 – Lines 494–502",
+      groups: [
+        {
+          label: "Practice set 1",
+          greek: [
+            "ὣς ἄρα φωνήσας κόρυθ’ εἵλετο φαίδιμος Ἕκτωρ"
+          ],
+          english: [
+            "Having spoken thus, glorious Hector took up his helmet"
+          ]
+        },
+        {
+          label: "Practice set 2",
+          greek: [
+            "ἱππουρίν· ἄλοχος δὲ φίλη οἶκον δὲ βεβήκει"
+          ],
+          english: [
+            "With its horsehair plume: his dear wife went home"
+          ]
+        },
+        {
+          label: "Practice set 3",
+          greek: [
+            "ἐντροπαλιζομένη, θαλερὸν κατὰ δάκρυ χέουσα."
+          ],
+          english: [
+            "Often turning round, weeping great tears."
+          ]
+        },
+        {
+          label: "Practice set 4",
+          greek: [
+            "αἶψα δ’ ἔπειθ’ ἵκανε δόμους εὖ ναιετάοντας"
+          ],
+          english: [
+            "And then she came quickly to the well-built house,"
+          ]
+        },
+        {
+          label: "Practice set 5",
+          greek: [
+            "Ἕκτορος ἀνδροφόνοιο, κιχήσατο δ’ ἔνδοθι πολλὰς"
+          ],
+          english: [
+            "Of man-slaying Hector, she found many maids inside,"
+          ]
+        },
+        {
+          label: "Practice set 6",
+          greek: [
+            "ἀμφιπόλους, τῇσιν δὲ γόον πάσῃσιν ἐνώρσεν."
+          ],
+          english: [
+            "And among all of them she roused lamentation."
+          ]
+        },
+        {
+          label: "Practice set 7",
+          greek: [
+            "αἳ μὲν ἔτι ζώον γόον Ἕκτορα ᾧ ἔνι οἴκῳ·"
+          ],
+          english: [
+            "They mourned for Hector, though he was still alive, in his house:"
+          ]
+        },
+        {
+          label: "Practice set 8",
+          greek: [
+            "οὐ γάρ μιν ἔτ’ ἔφαντο ὑπότροπον ἐκ πολέμοιο"
+          ],
+          english: [
+            "For they thought that he would not return any more from the war,"
+          ]
+        },
+        {
+          label: "Practice set 9",
+          greek: [
+            "ἵξεσθαι προφυγόντα μένος καὶ χεῖρας Ἀχαιῶν."
+          ],
+          english: [
+            "Having escaped the fury and hands of the Achaeans."
+          ]
+        }
+      ]
+    },
   ];
   
