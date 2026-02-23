@@ -61,6 +61,7 @@ export default function App() {
   const [shakeInput, setShakeInput] = useState(false);
   const [gradePulse, setGradePulse] = useState(false);
   const [toast, setToast] = useState(null);
+  const [darkMode, setDarkMode] = useState(false);
 
   const inputRef = useRef(null);
   const prevGradeRef = useRef(null);
@@ -289,6 +290,12 @@ setStreak(0);
     prevLevelRef.current = level;
   }, [level]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    if (darkMode) root.classList.add("dark");
+    else root.classList.remove("dark");
+  }, [darkMode]);
+
   const formatGreek = () => {
     if (selectedSectionIdx === null) return "";
 
@@ -326,9 +333,79 @@ setStreak(0);
       maxWidth: "900px",
       margin: "0 auto",
       fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
-      lineHeight: "1.6"
+      lineHeight: "1.6",
+      background: "var(--bg)",
+      color: "var(--text)",
+      minHeight: "100vh"
     }}>
       <style>{`
+        :root {
+          --bg: #ffffff;
+          --text: #111111;
+          --mutedText: rgba(0,0,0,0.55);
+          --panel: #f9f9f9;
+          --card: rgba(255,255,255,0.75);
+          --border: rgba(0,0,0,0.12);
+          --shadow: rgba(0,0,0,0.10);
+          --inputBg: #ffffff;
+        }
+
+        .dark {
+          --bg: #0f1115;
+          --text: #e8e8e8;
+          --mutedText: rgba(255,255,255,0.62);
+          --panel: #171a21;
+          --card: rgba(23,26,33,0.85);
+          --border: rgba(255,255,255,0.14);
+          --shadow: rgba(0,0,0,0.45);
+          --inputBg: #0f1115;
+        }
+
+        body {
+          background: var(--bg);
+          color: var(--text);
+        }
+
+        .statCard {
+          background: var(--card);
+          border: 1px solid var(--border);
+          box-shadow: 0 6px 18px var(--shadow);
+        }
+
+        .label {
+          color: var(--mutedText);
+        }
+
+        .toast {
+          background: rgba(255,255,255,0.95);
+          border: 1px solid var(--border);
+        }
+
+        .dark .toast {
+          background: rgba(23,26,33,0.96);
+        }
+
+        .panel {
+          background: var(--panel);
+          border: 1px solid var(--border);
+        }
+
+        .input {
+          background: var(--inputBg);
+          color: var(--text);
+          border: 1px solid var(--border);
+        }
+
+        .toggleBtn {
+          padding: 10px 14px;
+          border-radius: 999px;
+          border: 1px solid var(--border);
+          background: var(--card);
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 800;
+          color: var(--text);
+        }
         @keyframes pop {
           0% { transform: scale(1); }
           30% { transform: scale(1.15); }
@@ -523,6 +600,15 @@ setStreak(0);
 }
       `}</style>
       {toast && <div className="toast">{toast}</div>}
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "12px" }}>
+        <button
+          className="toggleBtn"
+          onClick={() => setDarkMode((d) => !d)}
+          aria-label="Toggle dark mode"
+        >
+          {darkMode ? "☀️ Light" : "🌙 Dark"}
+        </button>
+      </div>
       {selectedSectionIdx === null && (
         <div>
           <h2 style={{ fontWeight: "600", fontSize: "28px", marginBottom: "20px", textAlign: "center" }}>
@@ -841,8 +927,8 @@ setStreak(0);
                 />
               ) : (
                 <div
+                  className="panel"
                   style={{
-                    background: "#f9f9f9",
                     padding: "15px",
                     borderRadius: "8px",
                     fontSize: "20px",
@@ -860,8 +946,7 @@ setStreak(0);
 
             <div style={{ flex: 1 }}>
               <h2>Your Translation:</h2>
-              <div style={{
-                background: "#f9f9f9",
+              <div className="panel" style={{
                 padding: "15px",
                 minHeight: "100px",
                 whiteSpace: "pre-wrap",
@@ -890,7 +975,7 @@ setStreak(0);
 
           <input
             ref={inputRef}
-            className={shakeInput ? "shake" : ""}
+            className={`${shakeInput ? "shake" : ""} input`}
             type="text"
             placeholder="Type next English word, then space..."
             value={currentWord}
@@ -900,8 +985,7 @@ setStreak(0);
               padding: "12px",
               fontSize: "16px",
               marginTop: "10px",
-              borderRadius: "6px",
-              border: "1px solid #ccc"
+              borderRadius: "6px"
             }}
           />
 
