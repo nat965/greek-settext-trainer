@@ -62,6 +62,10 @@ export default function App() {
   const [gradePulse, setGradePulse] = useState(false);
   const [toast, setToast] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
+  // Practice mode: "word" or "full"
+  const [practiceMode, setPracticeMode] = useState("word");
+  const [fullTranslationInput, setFullTranslationInput] = useState("");
+  const [fullTranslationResult, setFullTranslationResult] = useState(null);
 
   const inputRef = useRef(null);
   const prevGradeRef = useRef(null);
@@ -74,26 +78,198 @@ export default function App() {
       .toLowerCase()
       .trim();
 
+  const FULL_MODE_STOPWORDS = new Set([
+    "a", "an", "the", "and", "but", "or", "for", "nor", "so", "yet",
+    "to", "of", "in", "on", "at", "by", "with", "from", "into", "onto",
+    "up", "down", "over", "under", "through", "before", "after", "when",
+    "while", "as", "that", "which", "who", "whom", "this", "these", "those",
+    "is", "was", "were", "be", "been", "being", "am", "are",
+    "do", "does", "did", "has", "have", "had", "will", "would", "shall", "should",
+    "i", "me", "my", "you", "your", "he", "him", "his", "she", "her", "they", "them", "their",
+    "we", "us", "our", "it", "its", "not"
+  ]);
+
+  const FULL_MODE_CANONICAL_MAP = {
+    dear: "dear",
+    dearest: "dear",
+    beloved: "dear",
+    sweet: "sweet",
+    sweetsmelling: "sweet",
+    fragrant: "sweet",
+    smelling: "sweet",
+    home: "house",
+    house: "house",
+    maid: "maid",
+    maids: "maid",
+    servant: "maid",
+    servants: "maid",
+    task: "work",
+    tasks: "work",
+    work: "work",
+    works: "work",
+    labor: "work",
+    labour: "work",
+    loom: "loom",
+    spindle: "spindle",
+    man: "man",
+    men: "man",
+    husband: "husband",
+    wife: "wife",
+    child: "son",
+    son: "son",
+    babe: "son",
+    baby: "son",
+    war: "war",
+    battle: "war",
+    fighting: "war",
+    fate: "fate",
+    doom: "fate",
+    destiny: "fate",
+    hades: "hades",
+    ilium: "ilium",
+    troy: "ilium",
+    pity: "pity",
+    pitied: "pity",
+    grieve: "grieve",
+    despair: "grieve",
+    mourn: "grieve",
+    weep: "grieve",
+    weeping: "grieve",
+    crying: "grieve",
+    said: "say",
+    say: "say",
+    spoke: "say",
+    speaking: "say",
+    declared: "say",
+    declare: "say",
+    escaped: "escape",
+    escape: "escape",
+    fled: "escape",
+    return: "return",
+    returned: "return",
+    come: "return",
+    came: "return",
+    go: "go",
+    went: "go",
+    look: "look",
+    attend: "look",
+    see: "look",
+    saw: "look",
+    order: "order",
+    tell: "order",
+    command: "order",
+    stroke: "stroke",
+    stroked: "stroke",
+    touched: "stroke",
+    hand: "hand"
+  };
+
+  function canonicalizeFullModeWord(word) {
+    const normalized = normalize(word).replace(/'/g, "");
+    return FULL_MODE_CANONICAL_MAP[normalized] || normalized;
+  }
+
+  function isFullModeContentWord(word) {
+    const canonical = canonicalizeFullModeWord(word);
+    return canonical && !FULL_MODE_STOPWORDS.has(canonical);
+  }
+
+  // --- Full translation helpers ---
+  function getTargetText() {
+    if (selectedSectionIdx === null) return "";
+    if (practiceAll) {
+      return sections[selectedSectionIdx].groups.map(g => g.english.join(" ")).join(" ");
+    }
+    return sections[selectedSectionIdx].groups[selectedLineIdx]?.english.join(" ") || "";
+  }
+  function getTargetWords() {
+    return getTargetText().trim().split(/\s+/);
+  }
+  function evaluateFullTranslation() {
+    const targetWords = getTargetWords();
+    const typedWords = fullTranslationInput.trim() ? fullTranslationInput.trim().split(/\s+/) : [];
+
+    const typedMeta = typedWords.map((word, idx) => ({
+      original: word,
+      normalized: normalize(word),
+      canonical: canonicalizeFullModeWord(word),
+      idx,
+      used: false
+    }));
+
+    const wordResults = [];
+    let matchedContentWords = 0;
+    let totalContentWords = 0;
+
+    for (let i = 0; i < targetWords.length; i++) {
+      const expectedOriginal = targetWords[i];
+      const expectedNormalized = normalize(expectedOriginal);
+      const expectedCanonical = canonicalizeFullModeWord(expectedOriginal);
+      const isContentWord = isFullModeContentWord(expectedOriginal);
+
+      if (isContentWord) totalContentWords += 1;
+
+      let matchIndex = -1;
+
+      for (let j = 0; j < typedMeta.length; j++) {
+        if (typedMeta[j].used) continue;
+
+        const exactMatch = typedMeta[j].normalized === expectedNormalized;
+        const closeSpellingMatch = typedMeta[j].normalized && expectedNormalized && levenshtein(typedMeta[j].normalized, expectedNormalized) <= 1;
+        const canonicalMatch = typedMeta[j].canonical === expectedCanonical;
+
+        if (exactMatch || closeSpellingMatch || canonicalMatch) {
+          matchIndex = j;
+          break;
+        }
+      }
+
+      const matchedWord = matchIndex >= 0 ? typedMeta[matchIndex] : null;
+      if (matchedWord) typedMeta[matchIndex].used = true;
+
+      const isCorrect = Boolean(matchedWord) || !isContentWord;
+
+      if (Boolean(matchedWord) && isContentWord) {
+        matchedContentWords += 1;
+      }
+
+      wordResults.push({
+        correct: isCorrect,
+        expected: expectedOriginal,
+        actual: matchedWord ? matchedWord.original : null,
+        isContentWord
+      });
+    }
+
+    const extraWords = typedMeta.filter(word => !word.used && isFullModeContentWord(word.original));
+    const mistakes = Math.max(totalContentWords - matchedContentWords, 0) + extraWords.length;
+    const accuracy = totalContentWords === 0 ? 100 : Math.round((matchedContentWords / totalContentWords) * 100);
+
+    let grade = "C";
+    if (accuracy === 100 && mistakes === 0) grade = "S";
+    else if (accuracy >= 95) grade = "A";
+    else if (accuracy >= 85) grade = "B";
+
+    setFullTranslationResult({
+      correct: matchedContentWords,
+      total: totalContentWords,
+      accuracy,
+      grade,
+      mistakes,
+      wordResults,
+      extraWords: extraWords.map(word => word.original)
+    });
+    setFeedback(`Marked: ${accuracy}% accuracy`);
+  }
+
   const handleTyping = (e) => {
     const value = e.target.value;
     setCurrentWord(value);
-  
     if (selectedSectionIdx === null) return;
-  
-    let targetText;
-  
-    if (practiceAll) {
-      targetText = sections[selectedSectionIdx].groups.map(g => g.english.join(" ")).join(" ");
-    } else {
-      targetText = sections[selectedSectionIdx].groups[selectedLineIdx].english.join(" ");
-    }
-  
-    const targetWords = targetText.trim().split(/\s+/);
-  
+    const targetWords = getTargetWords();
     if (value.endsWith(" ")) {
       const typed = normalize(value.trim());
       const correctWord = normalize(targetWords[userWords.length] || "");
-
       if (typed === correctWord || levenshtein(typed, correctWord) <= 1) {
         setUserWords((prev) => [...prev, targetWords[userWords.length]]);
         setStreak(prev => {
@@ -111,7 +287,6 @@ export default function App() {
         setXp(prev => prev + 1);
         setCurrentWord("");
         setFeedback("Correct");
-
         if (userWords.length + 1 === targetWords.length) {
           setShowFinishedPopup(true);
           confetti({
@@ -122,9 +297,9 @@ export default function App() {
         }
       } else {
         setFeedback("Try again.");
-setShakeInput(true);
-setTimeout(() => setShakeInput(false), 240);
-setStreak(0);
+        setShakeInput(true);
+        setTimeout(() => setShakeInput(false), 240);
+        setStreak(0);
         if (!mistakePositions.includes(userWords.length)) {
           setMistakePositions((prev) => [...prev, userWords.length]);
         }
@@ -133,7 +308,6 @@ setStreak(0);
         }
       }
     }
-  
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -141,12 +315,7 @@ setStreak(0);
 
   const handleHint = () => {
     if (selectedSectionIdx === null) return;
- 
-    const targetText = practiceAll
-      ? sections[selectedSectionIdx].groups.map(g => g.english.join(" ")).join(" ")
-      : sections[selectedSectionIdx].groups[selectedLineIdx].english.join(" ");
- 
-    const targetWords = targetText.trim().split(/\s+/);
+    const targetWords = getTargetWords();
     if (userWords.length < targetWords.length) {
       const firstLetter = targetWords[userWords.length][0];
       setFeedback(`Hint: starts with "${firstLetter}"`);
@@ -155,12 +324,7 @@ setStreak(0);
 
   const handleRevealWord = () => {
     if (selectedSectionIdx === null) return;
-
-    const targetText = practiceAll
-      ? sections[selectedSectionIdx].groups.map(g => g.english.join(" ")).join(" ")
-      : sections[selectedSectionIdx].groups[selectedLineIdx].english.join(" ");
-
-    const targetWords = targetText.trim().split(/\s+/);
+    const targetWords = getTargetWords();
     if (userWords.length < targetWords.length) {
       const nextWord = targetWords[userWords.length];
       setUserWords(prev => [...prev, nextWord]);
@@ -169,7 +333,6 @@ setStreak(0);
       setCurrentWord("");
       setFeedback("Word revealed.");
     }
-
     if (userWords.length + 1 === targetWords.length) {
       setShowFinishedPopup(true);
       confetti({
@@ -178,7 +341,6 @@ setStreak(0);
         origin: { y: 0.6 }
       });
     }
-
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -196,6 +358,9 @@ setStreak(0);
     setStreak(0);
     setBestStreak(0);
     setXp(0);
+    setPracticeMode("word");
+    setFullTranslationInput("");
+    setFullTranslationResult(null);
   };
   
   const handleResetMistakes = () => {
@@ -206,14 +371,8 @@ setStreak(0);
   const progress = (() => {
     if (selectedSectionIdx === null) return 0;
     if (!sections[selectedSectionIdx]) return 0;
-  
-    const targetText = practiceAll
-      ? sections[selectedSectionIdx].groups.map(g => g.english.join(" ")).join(" ")
-      : (sections[selectedSectionIdx].groups[selectedLineIdx]?.english.join(" ") || "");
-  
-    const totalWords = targetText.trim().split(/\s+/).length;
+    const totalWords = getTargetWords().length;
     if (totalWords === 0) return 0;
-  
     const safeProgress = Math.min((userWords.length / totalWords) * 100, 100);
     return Math.round(safeProgress);
   })();
@@ -711,6 +870,9 @@ setStreak(0);
                 setCurrentWord("");
                 setFeedback("");
                 setMistakes(0);
+                setPracticeMode("word");
+                setFullTranslationInput("");
+                setFullTranslationResult(null);
               }}
               style={{
                 padding: "12px 20px",
@@ -733,6 +895,9 @@ setStreak(0);
                 setCurrentWord("");
                 setFeedback("");
                 setMistakes(0);
+                setPracticeMode("word");
+                setFullTranslationInput("");
+                setFullTranslationResult(null);
               }}
               style={{
                 padding: "12px 20px",
@@ -757,6 +922,9 @@ setStreak(0);
                   setCurrentWord("");
                   setFeedback("");
                   setMistakes(0);
+                  setPracticeMode("word");
+                  setFullTranslationInput("");
+                  setFullTranslationResult(null);
                 }}
                 style={{
                   padding: "12px 20px",
@@ -815,6 +983,9 @@ setStreak(0);
               setCurrentWord("");
               setFeedback("");
               setMistakes(0);
+              setPracticeMode("word");
+              setFullTranslationInput("");
+              setFullTranslationResult(null);
             }}
             style={{
               padding: "10px 16px",
@@ -847,6 +1018,8 @@ setStreak(0);
                 setUserWords([]);
                 setCurrentWord("");
                 setFeedback("");
+                setFullTranslationInput("");
+                setFullTranslationResult(null);
               }
             }}
             style={{
@@ -872,6 +1045,9 @@ setStreak(0);
                     setFeedback("");
                     setMistakes(0);
                     setMistakePositions([]);
+                    setPracticeMode("word");
+                    setFullTranslationInput("");
+                    setFullTranslationResult(null);
                   }
                 }}
                 style={{
@@ -894,6 +1070,9 @@ setStreak(0);
                   setFeedback("");
                   setMistakes(0);
                   setMistakePositions([]);
+                  setPracticeMode("word");
+                  setFullTranslationInput("");
+                  setFullTranslationResult(null);
                 }}
                 style={{
                   padding: "10px 16px",
@@ -973,67 +1152,206 @@ setStreak(0);
             </div>
           </div>
 
-          <input
-            ref={inputRef}
-            className={`${shakeInput ? "shake" : ""} input`}
-            type="text"
-            placeholder="Type next English word, then space..."
-            value={currentWord}
-            onChange={handleTyping}
-            style={{
-              width: "100%",
-              padding: "12px",
-              fontSize: "16px",
-              marginTop: "10px",
-              borderRadius: "6px"
-            }}
-          />
+          {/* Mode switch buttons */}
+          <div style={{ marginTop: "10px", marginBottom: "10px", display: "flex", gap: "10px" }}>
+            <button
+              onClick={() => setPracticeMode("word")}
+              style={{
+                padding: "10px 18px",
+                borderRadius: "6px",
+                border: "2px solid",
+                borderColor: practiceMode === "word" ? "#2196f3" : "#ccc",
+                background: practiceMode === "word" ? "#e3f2fd" : "#f0f0f0",
+                fontWeight: practiceMode === "word" ? 700 : 400,
+                cursor: "pointer"
+              }}
+              disabled={practiceMode === "word"}
+            >
+              Word by Word
+            </button>
+            <button
+              onClick={() => setPracticeMode("full")}
+              style={{
+                padding: "10px 18px",
+                borderRadius: "6px",
+                border: "2px solid",
+                borderColor: practiceMode === "full" ? "#2196f3" : "#ccc",
+                background: practiceMode === "full" ? "#e3f2fd" : "#f0f0f0",
+                fontWeight: practiceMode === "full" ? 700 : 400,
+                cursor: "pointer"
+              }}
+              disabled={practiceMode === "full"}
+            >
+              Type Full Translation
+            </button>
+          </div>
 
-          <div style={{ marginTop: "15px" }}>
-            <button onClick={handleHint} style={{
-              marginRight: "10px",
-              padding: "10px 16px",
-              backgroundColor: "#e0e0e0",
-              border: "1px solid #bbb",
-              borderRadius: "6px",
-              cursor: "pointer",
-              fontSize: "15px"
-            }}>
-              Hint
-            </button>
-            <button onClick={handleRevealWord} style={{
-              marginRight: "10px",
-              padding: "10px 16px",
-              backgroundColor: "#fce4ec",
-              border: "1px solid #f06292",
-              borderRadius: "6px",
-              cursor: "pointer",
-              fontSize: "15px"
-            }}>
-              Reveal Word
-            </button>
-            <div className="hud" style={{ width: "100%" }}>
-              <div className="statCard">
-                <span className="label">Mistakes</span>
-                <span className={`value ${mistakes > 0 ? "valuePop" : ""}`}>{mistakes}</span>
+          {practiceMode === "word" && (
+            <>
+              <input
+                ref={inputRef}
+                className={`${shakeInput ? "shake" : ""} input`}
+                type="text"
+                placeholder="Type next English word, then space..."
+                value={currentWord}
+                onChange={handleTyping}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  fontSize: "16px",
+                  marginTop: "10px",
+                  borderRadius: "6px"
+                }}
+              />
+              <div style={{ marginTop: "15px" }}>
+                <button onClick={handleHint} style={{
+                  marginRight: "10px",
+                  padding: "10px 16px",
+                  backgroundColor: "#e0e0e0",
+                  border: "1px solid #bbb",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontSize: "15px"
+                }}>
+                  Hint
+                </button>
+                <button onClick={handleRevealWord} style={{
+                  marginRight: "10px",
+                  padding: "10px 16px",
+                  backgroundColor: "#fce4ec",
+                  border: "1px solid #f06292",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontSize: "15px"
+                }}>
+                  Reveal Word
+                </button>
+                <div className="hud" style={{ width: "100%" }}>
+                  <div className="statCard">
+                    <span className="label">Mistakes</span>
+                    <span className={`value ${mistakes > 0 ? "valuePop" : ""}`}>{mistakes}</span>
+                  </div>
+                  <div className="statCard">
+                    <span className="label">Streak</span>
+                    <span className="value">
+                      <span className="flame" style={{ animationDuration: `${flameSpeedMs}ms` }}>🔥</span>
+                      <span className={streak > 0 ? "valuePop" : ""}>{streak}</span>
+                      <span style={{ fontSize: "14px", fontWeight: 700, marginLeft: "8px", color: "rgba(0,0,0,0.55)" }}>
+                        Best {bestStreak}
+                      </span>
+                    </span>
+                  </div>
+                </div>
               </div>
-
-              <div className="statCard">
-                <span className="label">Streak</span>
-                <span className="value">
-                  <span className="flame" style={{ animationDuration: `${flameSpeedMs}ms` }}>🔥</span>
-                  <span className={streak > 0 ? "valuePop" : ""}>{streak}</span>
-                  <span style={{ fontSize: "14px", fontWeight: 700, marginLeft: "8px", color: "rgba(0,0,0,0.55)" }}>
-                    Best {bestStreak}
-                  </span>
-                </span>
+            </>
+          )}
+          {practiceMode === "full" && (
+            <div style={{ marginTop: "10px" }}>
+              <textarea
+                value={fullTranslationInput}
+                onChange={e => setFullTranslationInput(e.target.value)}
+                rows={4}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  fontSize: "16px",
+                  borderRadius: "6px",
+                  resize: "vertical"
+                }}
+                placeholder="Type your full English translation here. Full mode focuses more on content words than exact phrasing..."
+              />
+              <div>
+                <button
+                  onClick={evaluateFullTranslation}
+                  style={{
+                    marginTop: "8px",
+                    padding: "10px 20px",
+                    borderRadius: "6px",
+                    backgroundColor: "#2196f3",
+                    color: "#fff",
+                    fontWeight: 700,
+                    border: "none",
+                    fontSize: "16px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Mark Translation
+                </button>
               </div>
             </div>
-          </div>
+          )}
 
           <p style={{ marginTop: "12px", fontSize: "18px", fontWeight: "600" }}>
             {feedback}
           </p>
+
+          {/* Full translation result panel */}
+          {practiceMode === "full" && fullTranslationResult && (
+            <div
+              style={{
+                marginTop: "16px",
+                padding: "16px",
+                background: "#f9fbe7",
+                borderRadius: "8px",
+                border: "1px solid #dce775"
+              }}
+            >
+              <div style={{ fontSize: "17px", marginBottom: "6px" }}>
+                <strong>Accuracy:</strong> {fullTranslationResult.accuracy}%<br />
+                <strong>Grade:</strong> {fullTranslationResult.grade}<br />
+                <strong>Content Words:</strong> {fullTranslationResult.correct} / {fullTranslationResult.total}<br />
+                <strong>Mistakes:</strong> {fullTranslationResult.mistakes}
+              </div>
+              <div style={{ marginTop: "10px", fontFamily: "monospace", fontSize: "16px", lineHeight: "2", wordBreak: "break-word" }}>
+                {fullTranslationResult.wordResults.map((res, idx) => {
+                  if (!res.isContentWord) {
+                    return (
+                      <span
+                        key={idx}
+                        style={{ background: "#eeeeee", color: "#666", borderRadius: "4px", padding: "2px 5px", marginRight: "3px", opacity: 0.75 }}
+                        title="Function word: not strictly marked in full-translation mode"
+                      >
+                        {res.expected}
+                      </span>
+                    );
+                  }
+
+                  if (res.correct) {
+                    return (
+                      <span key={idx} style={{ background: "#c8e6c9", color: "#222", borderRadius: "4px", padding: "2px 5px", marginRight: "3px" }}>
+                        {res.expected}
+                      </span>
+                    );
+                  } else if (res.actual) {
+                    return (
+                      <span
+                        key={idx}
+                        style={{ background: "#ffcdd2", color: "#222", borderRadius: "4px", padding: "2px 5px", marginRight: "3px" }}
+                        title={`You wrote: ${res.actual}`}
+                      >
+                        {res.expected}
+                      </span>
+                    );
+                  } else {
+                    return (
+                      <span
+                        key={idx}
+                        style={{ background: "#ffcdd2", color: "#222", borderRadius: "4px", padding: "2px 5px", marginRight: "3px", opacity: 0.7 }}
+                        title="Missing content word"
+                      >
+                        {res.expected}
+                      </span>
+                    );
+                  }
+                })}
+              </div>
+              {fullTranslationResult.extraWords.length > 0 && (
+                <div style={{ marginTop: "12px", fontSize: "14px" }}>
+                  <strong>Extra words you added:</strong> {fullTranslationResult.extraWords.join(", ")}
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="bar" style={{
             background: "#ddd",
@@ -1144,7 +1462,7 @@ setStreak(0);
             </div>
           )}
 
-          {showFinishedPopup && (
+          {practiceMode === "word" && showFinishedPopup && (
             <div style={{
               position: "fixed",
               top: 0,
