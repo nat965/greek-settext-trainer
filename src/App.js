@@ -66,6 +66,7 @@ export default function App() {
   const [practiceMode, setPracticeMode] = useState("word");
   const [fullTranslationInput, setFullTranslationInput] = useState("");
   const [fullTranslationResult, setFullTranslationResult] = useState(null);
+  const [selectedGloss, setSelectedGloss] = useState(null);
 
   const inputRef = useRef(null);
   const prevGradeRef = useRef(null);
@@ -361,6 +362,7 @@ export default function App() {
     setPracticeMode("word");
     setFullTranslationInput("");
     setFullTranslationResult(null);
+    setSelectedGloss(null);
   };
   
   const handleResetMistakes = () => {
@@ -455,35 +457,117 @@ export default function App() {
     else root.classList.remove("dark");
   }, [darkMode]);
 
-  const formatGreek = () => {
-    if (selectedSectionIdx === null) return "";
+  const cleanGreekToken = (token) =>
+    token
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[.,;:!?··'’"“”()]/g, "")
+      .toLowerCase()
+      .trim();
 
-    const lines = practiceAll
-      ? sections[selectedSectionIdx].groups.map(g => g.greek.join(" "))
-      : [sections[selectedSectionIdx].groups[selectedLineIdx].greek.join(" ")];
-
-    const properNames = [];
-
-    const formattedLines = lines.map((line) => {
-      const trimmedLine = line.trim();
-      const words = trimmedLine.split(/\s+/);
-
-      const correctedWords = words.map(word => {
-        const cleanWord = word.replace(/[^\w]/g, '');
-        return properNames.includes(cleanWord)
-          ? cleanWord
-          : word;
-      });
-
-      const finalLine = correctedWords.join(" ");
-      return finalLine;
-    });
+  const getCurrentWordData = () => {
+    if (selectedSectionIdx === null) return [];
 
     if (practiceAll) {
-      return formattedLines.join("\n");
-    } else {
-      return formattedLines.join(" ");
+      return sections[selectedSectionIdx].groups.flatMap(group =>
+        Array.isArray(group.wordData) ? group.wordData : []
+      );
     }
+
+    const group = sections[selectedSectionIdx].groups[selectedLineIdx];
+    return Array.isArray(group?.wordData) ? group.wordData : [];
+  };
+
+  const renderGreekContent = () => {
+    if (selectedSectionIdx === null) return null;
+
+    const groupsToRender = practiceAll
+      ? sections[selectedSectionIdx].groups
+      : [sections[selectedSectionIdx].groups[selectedLineIdx]];
+
+    const wordData = getCurrentWordData();
+    const glossMap = new Map();
+
+    wordData.forEach((entry) => {
+      const key = cleanGreekToken(entry.greek || "");
+      if (key && !glossMap.has(key)) {
+        glossMap.set(key, entry.gloss);
+      }
+    });
+
+    return groupsToRender.map((group, groupIdx) => (
+      <div key={groupIdx} style={{ marginBottom: practiceAll ? "14px" : 0 }}>
+        {group.greek.map((line, lineIdx) => (
+          <div key={lineIdx} style={{ marginBottom: "6px" }}>
+            {line.split(/(\s+)/).map((part, partIdx) => {
+              if (/^\s+$/.test(part)) {
+                return <span key={partIdx}>{part}</span>;
+              }
+
+              const cleaned = cleanGreekToken(part);
+              const gloss = glossMap.get(cleaned);
+              const isActive =
+                selectedGloss?.greek === part && selectedGloss?.gloss === gloss;
+
+              if (!gloss) {
+                return <span key={partIdx}>{part}</span>;
+              }
+
+              return (
+                <span
+                  key={partIdx}
+                  onClick={() => setSelectedGloss({ greek: part, gloss })}
+                  title="Click to show gloss"
+                  style={{
+                    cursor: "pointer",
+                    borderBottom: "2px dotted #90caf9",
+                    backgroundColor: isActive ? "#e3f2fd" : "transparent",
+                    borderRadius: "4px",
+                    padding: "1px 2px"
+                  }}
+                >
+                  {part}
+                </span>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    ));
+  };
+
+  const getCurrentPracticeLabel = () => {
+    if (selectedSectionIdx === null) return "";
+
+    const section = sections[selectedSectionIdx];
+    const groupInfo = groupedSets.find(group =>
+      group.items.some(item => item.idx === selectedSectionIdx)
+    );
+    const matchedItem = groupInfo?.items.find(item => item.idx === selectedSectionIdx);
+
+    const type = groupInfo?.title || (section.type === "verse" ? "Verse" : "Prose");
+    const sectionName = matchedItem?.buttonLabel || section.buttonLabel || section.label || `Section ${selectedSectionIdx + 1}`;
+
+    const totalSets = section.groups.length;
+
+    if (practiceAll) {
+      return `${type} · ${sectionName} · All Lines (${totalSets} sets)`;
+    }
+
+    if (selectedLineIdx !== null) {
+      const group = section.groups[selectedLineIdx];
+      const explicitGroupLabel = group?.label?.trim();
+      const fallbackGroupLabel = type === "Prose"
+        ? `Part ${selectedLineIdx + 1}`
+        : `Practice Set ${selectedLineIdx + 1}`;
+      const groupName = explicitGroupLabel || fallbackGroupLabel;
+
+      const current = selectedLineIdx + 1;
+
+      return `${type} · ${sectionName} · ${groupName} (${current}/${totalSets})`;
+    }
+
+    return `${type} · ${sectionName}`;
   };
 
   return (
@@ -873,6 +957,7 @@ export default function App() {
                 setPracticeMode("word");
                 setFullTranslationInput("");
                 setFullTranslationResult(null);
+                setSelectedGloss(null);
               }}
               style={{
                 padding: "12px 20px",
@@ -898,6 +983,7 @@ export default function App() {
                 setPracticeMode("word");
                 setFullTranslationInput("");
                 setFullTranslationResult(null);
+                setSelectedGloss(null);
               }}
               style={{
                 padding: "12px 20px",
@@ -925,6 +1011,7 @@ export default function App() {
                   setPracticeMode("word");
                   setFullTranslationInput("");
                   setFullTranslationResult(null);
+                  setSelectedGloss(null);
                 }}
                 style={{
                   padding: "12px 20px",
@@ -960,6 +1047,19 @@ export default function App() {
 
       {(selectedLineIdx !== null || practiceAll) && (
         <div>
+          <div
+            className="panel"
+            style={{
+              padding: "12px 16px",
+              borderRadius: "10px",
+              marginBottom: "16px",
+              textAlign: "center",
+              fontSize: "18px",
+              fontWeight: "700"
+            }}
+          >
+            {getCurrentPracticeLabel()}
+          </div>
           <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
           <button
             onClick={handleStartOver}
@@ -986,6 +1086,7 @@ export default function App() {
               setPracticeMode("word");
               setFullTranslationInput("");
               setFullTranslationResult(null);
+              setSelectedGloss(null);
             }}
             style={{
               padding: "10px 16px",
@@ -1020,6 +1121,7 @@ export default function App() {
                 setFeedback("");
                 setFullTranslationInput("");
                 setFullTranslationResult(null);
+                setSelectedGloss(null);
               }
             }}
             style={{
@@ -1048,6 +1150,7 @@ export default function App() {
                     setPracticeMode("word");
                     setFullTranslationInput("");
                     setFullTranslationResult(null);
+                    setSelectedGloss(null);
                   }
                 }}
                 style={{
@@ -1073,6 +1176,7 @@ export default function App() {
                   setPracticeMode("word");
                   setFullTranslationInput("");
                   setFullTranslationResult(null);
+                  setSelectedGloss(null);
                 }}
                 style={{
                   padding: "10px 16px",
@@ -1105,21 +1209,43 @@ export default function App() {
                   }}
                 />
               ) : (
-                <div
-                  className="panel"
-                  style={{
-                    padding: "15px",
-                    borderRadius: "8px",
-                    fontSize: "20px",
-                    whiteSpace: "pre-wrap",
-                    wordWrap: "break-word",
-                    marginBottom: "20px",
-                    fontFamily: "serif",
-                    textAlign: "center",
-                    lineHeight: "1.8"
-                  }}
-                  dangerouslySetInnerHTML={{ __html: formatGreek() }}
-                />
+                <>
+                  <div
+                    className="panel"
+                    style={{
+                      padding: "15px",
+                      borderRadius: "8px",
+                      fontSize: "20px",
+                      whiteSpace: "pre-wrap",
+                      wordWrap: "break-word",
+                      marginBottom: "12px",
+                      fontFamily: "serif",
+                      textAlign: "center",
+                      lineHeight: "1.8"
+                    }}
+                  >
+                    {renderGreekContent()}
+                  </div>
+                  <div
+                    className="panel"
+                    style={{
+                      padding: "10px 14px",
+                      borderRadius: "8px",
+                      marginBottom: "20px",
+                      fontSize: "15px",
+                      textAlign: "center",
+                      minHeight: "24px"
+                    }}
+                  >
+                    {selectedGloss ? (
+                      <>
+                        <strong>{selectedGloss.greek}</strong>: {selectedGloss.gloss}
+                      </>
+                    ) : (
+                      <span style={{ opacity: 0.7 }}>Click a Greek word to see its English gloss.</span>
+                    )}
+                  </div>
+                </>
               )}
             </div>
 
