@@ -1,5 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import { sections } from "./texts";
+import { useState, useRef, useEffect } from "react";import { sections } from "./texts";
 import confetti from 'canvas-confetti';
 
 const sectionImages = {
@@ -202,7 +201,7 @@ export default function App() {
     const text = getTargetText({ useSelection }).trim();
     return text ? text.split(/\s+/) : [];
   }
-  const evaluateFullTranslation = useCallback(() => {
+  const evaluateFullTranslation = () => {
     const targetWords = getTargetWords({ useSelection: true });
     const typedWords = fullTranslationInput.trim() ? fullTranslationInput.trim().split(/\s+/) : [];
 
@@ -283,7 +282,7 @@ export default function App() {
     });
     setFeedback(`Marked: ${accuracy}% accuracy`);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [fullTranslationInput]);
+};
 
   const handleTyping = (e) => {
     const value = e.target.value;
@@ -486,10 +485,7 @@ export default function App() {
   }, [darkMode]);
 
   const evaluateRef = useRef(evaluateFullTranslation);
-
-  useEffect(() => {
-    evaluateRef.current = evaluateFullTranslation;
-  }, [evaluateFullTranslation]);
+  evaluateRef.current = evaluateFullTranslation;
 
   useEffect(() => {
     const handleKeyDown = (e) => {
