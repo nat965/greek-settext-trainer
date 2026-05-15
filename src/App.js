@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { sections } from "./texts";
 import confetti from 'canvas-confetti';
 
@@ -67,6 +67,7 @@ export default function App() {
   const [fullTranslationInput, setFullTranslationInput] = useState("");
   const [fullTranslationResult, setFullTranslationResult] = useState(null);
   const [selectedGloss, setSelectedGloss] = useState(null);
+  const [selectedLineRange, setSelectedLineRange] = useState(null);
 
   const inputRef = useRef(null);
   const prevGradeRef = useRef(null);
@@ -176,18 +177,34 @@ export default function App() {
   }
 
   // --- Full translation helpers ---
-  function getTargetText() {
+  function getActiveGroups() {
+    if (selectedSectionIdx === null) return [];
+    if (practiceAll) return sections[selectedSectionIdx].groups;
+    return [sections[selectedSectionIdx].groups[selectedLineIdx]].filter(Boolean);
+  }
+  
+  function getActiveEnglishLines({ useSelection = true } = {}) {
+    const lines = getActiveGroups().flatMap(group => group.english || []);
+    if (!useSelection || !selectedLineRange) return lines;
+  
+    const start = Math.min(selectedLineRange.start, selectedLineRange.end);
+    const end = Math.max(selectedLineRange.start, selectedLineRange.end);
+  
+    return lines.slice(start, end + 1);
+  }
+  
+  function getTargetText({ useSelection = practiceMode === "full" } = {}) {
     if (selectedSectionIdx === null) return "";
-    if (practiceAll) {
-      return sections[selectedSectionIdx].groups.map(g => g.english.join(" ")).join(" ");
-    }
-    return sections[selectedSectionIdx].groups[selectedLineIdx]?.english.join(" ") || "";
+    return getActiveEnglishLines({ useSelection }).join(" ");
   }
-  function getTargetWords() {
-    return getTargetText().trim().split(/\s+/);
+  
+  function getTargetWords({ useSelection = practiceMode === "full" } = {}) {
+    const text = getTargetText({ useSelection }).trim();
+    return text ? text.split(/\s+/) : [];
   }
-  function evaluateFullTranslation() {
-    const targetWords = getTargetWords();
+  //eslint-disable-next-line 
+  const evaluateFullTranslation = useCallback(() => {
+    const targetWords = getTargetWords({ useSelection: true });
     const typedWords = fullTranslationInput.trim() ? fullTranslationInput.trim().split(/\s+/) : [];
 
     const typedMeta = typedWords.map((word, idx) => ({
@@ -246,10 +263,15 @@ export default function App() {
     const mistakes = Math.max(totalContentWords - matchedContentWords, 0) + extraWords.length;
     const accuracy = totalContentWords === 0 ? 100 : Math.round((matchedContentWords / totalContentWords) * 100);
 
-    let grade = "C";
-    if (accuracy === 100 && mistakes === 0) grade = "S";
-    else if (accuracy >= 95) grade = "A";
-    else if (accuracy >= 85) grade = "B";
+    let grade = 1;
+    if (accuracy === 100 && mistakes === 0) grade = 9;
+    else if (accuracy >= 95) grade = 8;
+    else if (accuracy >= 90) grade = 7;
+    else if (accuracy >= 85) grade = 6;
+    else if (accuracy >= 80) grade = 5;
+    else if (accuracy >= 70) grade = 4;
+    else if (accuracy >= 60) grade = 3;
+    else if (accuracy >= 50) grade = 2;
 
     setFullTranslationResult({
       correct: matchedContentWords,
@@ -261,7 +283,7 @@ export default function App() {
       extraWords: extraWords.map(word => word.original)
     });
     setFeedback(`Marked: ${accuracy}% accuracy`);
-  }
+  }, [fullTranslationInput, selectedSectionIdx, selectedLineIdx, practiceAll, selectedLineRange]);
 
   const handleTyping = (e) => {
     const value = e.target.value;
@@ -363,6 +385,7 @@ export default function App() {
     setFullTranslationInput("");
     setFullTranslationResult(null);
     setSelectedGloss(null);
+    setSelectedLineRange(null);
   };
   
   const handleResetMistakes = () => {
@@ -373,7 +396,7 @@ export default function App() {
   const progress = (() => {
     if (selectedSectionIdx === null) return 0;
     if (!sections[selectedSectionIdx]) return 0;
-    const totalWords = getTargetWords().length;
+    const totalWords = getTargetWords({ useSelection: false }).length;
     if (totalWords === 0) return 0;
     const safeProgress = Math.min((userWords.length / totalWords) * 100, 100);
     return Math.round(safeProgress);
@@ -387,10 +410,15 @@ export default function App() {
   })();
 
   const grade = (() => {
-    if (accuracy === 100 && mistakes === 0) return "S";
-    if (accuracy >= 95) return "A";
-    if (accuracy >= 85) return "B";
-    return "C";
+    if (accuracy === 100 && mistakes === 0) return 9;
+    if (accuracy >= 95) return 8;
+    if (accuracy >= 90) return 7;
+    if (accuracy >= 85) return 6;
+    if (accuracy >= 80) return 5;
+    if (accuracy >= 70) return 4;
+    if (accuracy >= 60) return 3;
+    if (accuracy >= 50) return 2;
+    return 1;
   })();
 
   const level = Math.floor(xp / 200) + 1;
@@ -457,6 +485,26 @@ export default function App() {
     else root.classList.remove("dark");
   }, [darkMode]);
 
+  const evaluateRef = useRef(evaluateFullTranslation);
+
+  useEffect(() => {
+    evaluateRef.current = evaluateFullTranslation;
+  }, [evaluateFullTranslation]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        if (practiceMode === "full") {
+          e.preventDefault();
+          evaluateRef.current();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [practiceMode]);
+
   const cleanGreekToken = (token) =>
     token
       .normalize("NFD")
@@ -486,6 +534,7 @@ export default function App() {
       : [sections[selectedSectionIdx].groups[selectedLineIdx]];
 
     const wordData = getCurrentWordData();
+    let globalLineIdx = 0;
     const glossMap = new Map();
 
     wordData.forEach((entry) => {
@@ -497,77 +546,117 @@ export default function App() {
 
     return groupsToRender.map((group, groupIdx) => (
       <div key={groupIdx} style={{ marginBottom: practiceAll ? "14px" : 0 }}>
-        {group.greek.map((line, lineIdx) => (
-          <div key={lineIdx} style={{ marginBottom: "6px" }}>
-            {line.split(/(\s+)/).map((part, partIdx) => {
-              if (/^\s+$/.test(part)) {
-                return <span key={partIdx}>{part}</span>;
-              }
+        {group.greek.map((line, lineIdx) => {
+          const thisLineIdx = globalLineIdx++;
+          const rangeStart = selectedLineRange ? Math.min(selectedLineRange.start, selectedLineRange.end) : null;
+          const rangeEnd = selectedLineRange ? Math.max(selectedLineRange.start, selectedLineRange.end) : null;
+          const isSelectedLine = selectedLineRange && thisLineIdx >= rangeStart && thisLineIdx <= rangeEnd;
 
-              const cleaned = cleanGreekToken(part);
-              const gloss = glossMap.get(cleaned);
-              const isActive =
-                selectedGloss?.greek === part && selectedGloss?.gloss === gloss;
+          return (
+            <div
+              key={lineIdx}
+              onClick={() => {
+                setFullTranslationResult(null);
+                setFullTranslationInput("");
+                setSelectedLineRange(prev => {
+                  if (!prev || prev.start !== prev.end) {
+                    return { start: thisLineIdx, end: thisLineIdx };
+                  }
+                  return { start: prev.start, end: thisLineIdx };
+                });
+              }}
+              title="Click once to choose the start line. Click another line to choose the end line."
+              style={{
+                marginBottom: "6px",
+                cursor: "pointer",
+                borderRadius: "8px",
+                padding: "2px 4px",
+                background: isSelectedLine ? "rgba(33, 150, 243, 0.14)" : "transparent",
+                outline: isSelectedLine ? "2px solid rgba(33, 150, 243, 0.35)" : "none"
+              }}
+            >
+              {line.split(/(\s+)/).map((part, partIdx) => {
+                if (/^\s+$/.test(part)) {
+                  return <span key={partIdx}>{part}</span>;
+                }
 
-              if (!gloss) {
-                return <span key={partIdx}>{part}</span>;
-              }
+                const cleaned = cleanGreekToken(part);
+                const gloss = glossMap.get(cleaned);
+                const isActive =
+                  selectedGloss?.greek === part && selectedGloss?.gloss === gloss;
 
-              return (
-                <span
-                  key={partIdx}
-                  onClick={() => setSelectedGloss({ greek: part, gloss })}
-                  title="Click to show gloss"
-                  style={{
-                    cursor: "pointer",
-                    borderBottom: "2px dotted #90caf9",
-                    backgroundColor: isActive ? "#e3f2fd" : "transparent",
-                    borderRadius: "4px",
-                    padding: "1px 2px"
-                  }}
-                >
-                  {part}
-                </span>
-              );
-            })}
-          </div>
-        ))}
+                if (!gloss) {
+                  return <span key={partIdx}>{part}</span>;
+                }
+
+                return (
+                  <span
+                    key={partIdx}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedGloss({ greek: part, gloss });
+                    }}
+                    title="Click to show gloss"
+                    style={{
+                      cursor: "pointer",
+                      borderBottom: "2px dotted #90caf9",
+                      backgroundColor: isActive ? "var(--accentSoft)" : "transparent",
+                      borderRadius: "4px",
+                      padding: "1px 2px"
+                    }}
+                  >
+                    {part}
+                  </span>
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
     ));
   };
 
   const getCurrentPracticeLabel = () => {
     if (selectedSectionIdx === null) return "";
-
+  
     const section = sections[selectedSectionIdx];
     const groupInfo = groupedSets.find(group =>
       group.items.some(item => item.idx === selectedSectionIdx)
     );
     const matchedItem = groupInfo?.items.find(item => item.idx === selectedSectionIdx);
-
+  
     const type = groupInfo?.title || (section.type === "verse" ? "Verse" : "Prose");
-    const sectionName = matchedItem?.buttonLabel || section.buttonLabel || section.label || `Section ${selectedSectionIdx + 1}`;
-
+    const sectionName =
+      matchedItem?.buttonLabel ||
+      section.buttonLabel ||
+      section.label ||
+      `Section ${selectedSectionIdx + 1}`;
+  
     const totalSets = section.groups.length;
-
+  
+    // Pull line range from section.name, e.g. "Iliad Book 6 – Lines 450–461"
+    const lineMatch = section.name?.match(/Lines?\s+([\d–-]+)/i);
+    const lineRange = lineMatch ? ` · Lines ${lineMatch[1]}` : "";
+  
     if (practiceAll) {
-      return `${type} · ${sectionName} · All Lines (${totalSets} sets)`;
+      return `${type} · ${sectionName}${lineRange} · All Lines (${totalSets} sets)`;
     }
-
+  
     if (selectedLineIdx !== null) {
       const group = section.groups[selectedLineIdx];
       const explicitGroupLabel = group?.label?.trim();
-      const fallbackGroupLabel = type === "Prose"
-        ? `Part ${selectedLineIdx + 1}`
-        : `Practice Set ${selectedLineIdx + 1}`;
+      const fallbackGroupLabel =
+        type === "Prose"
+          ? `Part ${selectedLineIdx + 1}`
+          : `Practice set ${selectedLineIdx + 1}`;
       const groupName = explicitGroupLabel || fallbackGroupLabel;
-
+  
       const current = selectedLineIdx + 1;
-
-      return `${type} · ${sectionName} · ${groupName} (${current}/${totalSets})`;
+  
+      return `${type} · ${sectionName}${lineRange} · ${groupName} (${current}/${totalSets})`;
     }
-
-    return `${type} · ${sectionName}`;
+  
+    return `${type} · ${sectionName}${lineRange}`;
   };
 
   return (
@@ -591,6 +680,16 @@ export default function App() {
           --border: rgba(0,0,0,0.12);
           --shadow: rgba(0,0,0,0.10);
           --inputBg: #ffffff;
+          --inputText: #111827;
+          --inputBorder: rgba(0,0,0,0.16);
+          --accentSoft: rgba(79,140,255,0.15);
+          --successBg: rgba(76,175,80,0.22);
+          --errorBg: rgba(244,67,54,0.22);
+          --neutralMarkBg: rgba(120,120,120,0.16);
+          --glossBg: #eef4ff;
+          --warningPanel: #fffde7;
+          --warningBorder: #dce775;
+          --barTrack: #d7dce5;
         }
 
         .dark {
@@ -602,6 +701,16 @@ export default function App() {
           --border: rgba(255,255,255,0.14);
           --shadow: rgba(0,0,0,0.45);
           --inputBg: #0f1115;
+          --inputText: #f3f6fb;
+          --inputBorder: rgba(255,255,255,0.16);
+          --accentSoft: rgba(110,168,255,0.18);
+          --successBg: rgba(76,175,80,0.26);
+          --errorBg: rgba(244,67,54,0.30);
+          --neutralMarkBg: rgba(255,255,255,0.10);
+          --glossBg: #1b2940;
+          --warningPanel: #202537;
+          --warningBorder: rgba(255,255,255,0.13);
+          --barTrack: #263244;
         }
 
         body {
@@ -634,10 +743,21 @@ export default function App() {
         }
 
         .input {
-          background: var(--inputBg);
-          color: var(--text);
-          border: 1px solid var(--border);
-        }
+  background: var(--inputBg);
+  color: var(--inputText);
+  border: 1px solid var(--inputBorder);
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accentSoft);
+}
+
+.input::placeholder {
+  color: var(--mutedText);
+}
 
         .toggleBtn {
           padding: 10px 14px;
@@ -739,10 +859,15 @@ export default function App() {
           letter-spacing: 0.04em;
         }
 
-        .gradeS { background: rgba(255, 215, 0, 0.25); }
-        .gradeA { background: rgba(76, 175, 80, 0.20); }
-        .gradeB { background: rgba(255, 152, 0, 0.20); }
-        .gradeC { background: rgba(244, 67, 54, 0.18); }
+        .grade9 { background: rgba(255, 215, 0, 0.25); }
+        .grade8 { background: rgba(205, 220, 57, 0.22); }
+        .grade7 { background: rgba(76, 175, 80, 0.20); }
+        .grade6 { background: rgba(102, 187, 106, 0.18); }
+        .grade5 { background: rgba(255, 193, 7, 0.20); }
+        .grade4 { background: rgba(255, 152, 0, 0.20); }
+        .grade3 { background: rgba(255, 112, 67, 0.20); }
+        .grade2 { background: rgba(244, 81, 30, 0.18); }
+        .grade1 { background: rgba(244, 67, 54, 0.18); }
 
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
@@ -958,6 +1083,7 @@ export default function App() {
                 setFullTranslationInput("");
                 setFullTranslationResult(null);
                 setSelectedGloss(null);
+                setSelectedLineRange(null);
               }}
               style={{
                 padding: "12px 20px",
@@ -984,6 +1110,7 @@ export default function App() {
                 setFullTranslationInput("");
                 setFullTranslationResult(null);
                 setSelectedGloss(null);
+                setSelectedLineRange(null);
               }}
               style={{
                 padding: "12px 20px",
@@ -1012,6 +1139,7 @@ export default function App() {
                   setFullTranslationInput("");
                   setFullTranslationResult(null);
                   setSelectedGloss(null);
+                  setSelectedLineRange(null);
                 }}
                 style={{
                   padding: "12px 20px",
@@ -1087,6 +1215,7 @@ export default function App() {
               setFullTranslationInput("");
               setFullTranslationResult(null);
               setSelectedGloss(null);
+              setSelectedLineRange(null);
             }}
             style={{
               padding: "10px 16px",
@@ -1122,6 +1251,7 @@ export default function App() {
                 setFullTranslationInput("");
                 setFullTranslationResult(null);
                 setSelectedGloss(null);
+                setSelectedLineRange(null);
               }
             }}
             style={{
@@ -1151,6 +1281,7 @@ export default function App() {
                     setFullTranslationInput("");
                     setFullTranslationResult(null);
                     setSelectedGloss(null);
+                    setSelectedLineRange(null);
                   }
                 }}
                 style={{
@@ -1177,6 +1308,7 @@ export default function App() {
                   setFullTranslationInput("");
                   setFullTranslationResult(null);
                   setSelectedGloss(null);
+                  setSelectedLineRange(null);
                 }}
                 style={{
                   padding: "10px 16px",
@@ -1242,7 +1374,44 @@ export default function App() {
                         <strong>{selectedGloss.greek}</strong>: {selectedGloss.gloss}
                       </>
                     ) : (
-                      <span style={{ opacity: 0.7 }}>Click a Greek word to see its English gloss.</span>
+                      <span style={{ opacity: 0.7 }}>Click a Greek word to see its English meaning.</span>
+                    )}
+                  </div>
+                  <div
+                    className="panel"
+                    style={{
+                      padding: "10px 14px",
+                      borderRadius: "8px",
+                      marginBottom: "20px",
+                      fontSize: "15px",
+                      textAlign: "center"
+                    }}
+                  >
+                    {selectedLineRange ? (
+                      <>
+                        <strong>Selected mini-section:</strong>{" "}
+                        lines {Math.min(selectedLineRange.start, selectedLineRange.end) + 1}–{Math.max(selectedLineRange.start, selectedLineRange.end) + 1}
+                        <button
+                          onClick={() => {
+                            setSelectedLineRange(null);
+                            setFullTranslationInput("");
+                            setFullTranslationResult(null);
+                          }}
+                          style={{
+                            marginLeft: "12px",
+                            padding: "5px 10px",
+                            borderRadius: "6px",
+                            border: "1px solid #bbb",
+                            cursor: "pointer"
+                          }}
+                        >
+                          Clear selection
+                        </button>
+                      </>
+                    ) : (
+                      <span style={{ opacity: 0.7 }}>
+                        Full mode: click a Greek line once to set the start, then another line to set the end. Only that mini-section will be marked.
+                      </span>
                     )}
                   </div>
                 </>
@@ -1374,6 +1543,7 @@ export default function App() {
           {practiceMode === "full" && (
             <div style={{ marginTop: "10px" }}>
               <textarea
+  className="input"
                 value={fullTranslationInput}
                 onChange={e => setFullTranslationInput(e.target.value)}
                 rows={4}
@@ -1382,9 +1552,12 @@ export default function App() {
                   padding: "12px",
                   fontSize: "16px",
                   borderRadius: "6px",
-                  resize: "vertical"
+                  resize: "vertical",
+                  background: "var(--inputBg)",
+  color: "var(--inputText)",
+border: "1px solid var(--inputBorder)"
                 }}
-                placeholder="Type your full English translation here. Full mode focuses more on content words than exact phrasing..."
+                placeholder={selectedLineRange ? "Type the English translation for your selected mini-section..." : "Type your full English translation here. Full mode focuses more on content words than exact phrasing..."}
               />
               <div>
                 <button
@@ -1417,12 +1590,18 @@ export default function App() {
               style={{
                 marginTop: "16px",
                 padding: "16px",
-                background: "#f9fbe7",
+                background: "var(--warningPanel)",
                 borderRadius: "8px",
-                border: "1px solid #dce775"
+                color: "var(--text)",
+                border: "1px solid var(--warningBorder)"
               }}
             >
               <div style={{ fontSize: "17px", marginBottom: "6px" }}>
+                {selectedLineRange && (
+                  <>
+                    <strong>Marked mini-section:</strong> lines {Math.min(selectedLineRange.start, selectedLineRange.end) + 1}–{Math.max(selectedLineRange.start, selectedLineRange.end) + 1}<br />
+                  </>
+                )}
                 <strong>Accuracy:</strong> {fullTranslationResult.accuracy}%<br />
                 <strong>Grade:</strong> {fullTranslationResult.grade}<br />
                 <strong>Content Words:</strong> {fullTranslationResult.correct} / {fullTranslationResult.total}<br />
@@ -1519,8 +1698,7 @@ export default function App() {
           <div className="hud" style={{ marginTop: "12px" }}>
             <div className="statCard">
               <span className="label">Grade</span>
-              <span className={`gradeBadge ${gradePulse ? "gradePulse" : ""} ${grade === "S" ? "gradeS" : grade === "A" ? "gradeA" : grade === "B" ? "gradeB" : "gradeC"}`}>{grade}</span>
-            </div>
+              <span className={`gradeBadge ${gradePulse ? "gradePulse" : ""} grade${grade}`}>{grade}</span>            </div>
 
             <div className="statCard">
               <span className="label">Level</span>
@@ -1539,7 +1717,7 @@ export default function App() {
             textAlign: "center",
             lineHeight: "1.4"
           }}>
-            <strong>Grade key:</strong> S = 100% accuracy, no mistakes · A ≥ 95% · B ≥ 85% · C &lt; 85%
+            <strong>Grade key:</strong> 9 = 100% accuracy, no mistakes · 8 ≥ 95% · 7 ≥ 90% · 6 ≥ 85% · 5 ≥ 80% · 4 ≥ 70% · 3 ≥ 60% · 2 ≥ 50% · 1 &lt; 50%
           </div>
           <div style={{
             marginTop: "6px",

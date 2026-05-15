@@ -782,7 +782,7 @@ export const sections = [
           english: [
             "Whoever wanted the least money to take her and marry her, to this man the young woman would be assigned.",
             "And in this way the shapely women would pay a dowry for the misshapen and crippled.",
-            "But it was not possible to give away his daughter to whoever each man wanted."
+            "But a man could not give his daughter in marriage to anyone he wished."
           ],
           wordData: [
             { greek: "ὅστις", gloss: "whoever" },
@@ -2653,7 +2653,7 @@ export const sections = [
             "Ζεῦ ἄλλοι τε θεοὶ δότε δὴ καὶ τόνδε γενέσθαι"
           ],
           english: [
-            "And praying, addressed Zeus and the other gods:'Zeus and you other gods, grant that this my son will be, "
+            "And praying, addressed Zeus and the other gods: 'Zeus and you other gods, grant that this my son will be, "
           ],
           wordData: [
             { greek: "εἶπε", gloss: "he spoke" },
@@ -2710,7 +2710,7 @@ export const sections = [
             "ἐκ πολέμου ἀνιόντα: φέροι δ᾽ ἔναρα βροτόεντα"
           ],
           english: [
-            "And perhaps they may they say, 'this is a man far better than his father, as he returns from battle. May he bring bloodstained spoils"
+            "And perhaps they may say, 'this is a man far better than his father, as he returns from battle. May he bring bloodstained spoils"
           ],
           wordData: [
             { greek: "καί", gloss: "and" },
@@ -2764,7 +2764,7 @@ export const sections = [
             "δακρυόεν γελάσασα."
           ],
           english: [
-            "So saying, he placed his son in the arms of his dear wife ho received him in her sweet-smelling bosom laughing through tears."
+            "So saying, he placed his son in the arms of his dear wife who received him in her sweet smelling bosom laughing through tears."
           ],
           wordData: [
             { greek: "ὣς", gloss: "so" },
@@ -2960,7 +2960,7 @@ export const sections = [
             "αἶψα δ᾽ ἔπειθ᾽ ἵκανε δόμους εὖ ναιετάοντας"
           ],
           english: [
-            "his dear wife went home often turning round, weeping great tears. And then she came quickly to the well built house,"
+            "his dear wife went home often turning round, weeping great tears. And then she came quickly to the comfortable house,"
           ],
           wordData: [
             { greek: "ἄλοχος", gloss: "wife" },
@@ -2980,7 +2980,7 @@ export const sections = [
             { greek: "ἵκανε", gloss: "came" },
             { greek: "δόμους", gloss: "house" },
             { greek: "εὖ", gloss: "well" },
-            { greek: "ναιετάοντας", gloss: "built" }
+            { greek: "ναιετάοντας", gloss: "comfortable" }
           ]
         },
         {
@@ -2990,7 +2990,7 @@ export const sections = [
             "ἀμφιπόλους, τῇσιν δὲ γόον πάσῃσιν ἐνῶρσεν."
           ],
           english: [
-            "Of man-slaying Hector, she found many maids inside, And among all of them she roused lamentation."
+            "Of man slaying Hector, she found many maids inside, And among all of them she roused lamentation."
           ],
           wordData: [
             { greek: "Ἕκτορος", gloss: "of Hector" },
