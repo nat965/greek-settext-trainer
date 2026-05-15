@@ -202,7 +202,6 @@ export default function App() {
     const text = getTargetText({ useSelection }).trim();
     return text ? text.split(/\s+/) : [];
   }
-  //eslint-disable-next-line 
   const evaluateFullTranslation = useCallback(() => {
     const targetWords = getTargetWords({ useSelection: true });
     const typedWords = fullTranslationInput.trim() ? fullTranslationInput.trim().split(/\s+/) : [];
@@ -283,7 +282,8 @@ export default function App() {
       extraWords: extraWords.map(word => word.original)
     });
     setFeedback(`Marked: ${accuracy}% accuracy`);
-  }, [fullTranslationInput, selectedSectionIdx, selectedLineIdx, practiceAll, selectedLineRange]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [fullTranslationInput]);
 
   const handleTyping = (e) => {
     const value = e.target.value;
