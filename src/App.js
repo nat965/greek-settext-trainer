@@ -77,18 +77,17 @@ export default function App() {
     str.normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[’‘`´]/g, "'")
-      .replace(/\b(that|it|he|she|who|what|where|when|why|how|there|here)'s\b/g, "$1 is")
-      .replace(/\b([a-z]+)'s\b/g, "$1s")
-      .replace(/[.,;:!?()\"“”]/g, "")
-      .replace(/\s+/g, " ")
       .toLowerCase()
+      .replace(/\b([a-z]+)'s\b/g, "$1 is")
+      .replace(/[.,;:!?()"“”]/g, "")
+      .replace(/\s+/g, " ")
       .trim();
 
   const FULL_MODE_STOPWORDS = new Set([
     "a", "an", "the", "and", "but", "or", "for", "nor", "so", "yet",
     "to", "of", "in", "on", "at", "by", "with", "from", "into", "onto",
     "up", "down", "over", "under", "through", "before", "after", "when",
-    "while", "as", "that", "which", "who", "whom", "this", "these", "those",
+    "while", "as", "that", "which", "who", "whom", "this", "these", "those", 
     "is", "s", "was", "were", "be", "been", "being", "am", "are",
     "do", "does", "did", "has", "have", "had", "will", "would", "shall", "should",
     "i", "me", "my", "you", "your", "he", "him", "his", "she", "her", "they", "them", "their",
@@ -96,16 +95,17 @@ export default function App() {
   ]);
 
   const FULL_MODE_CANONICAL_MAP = {
-    thats: "that is",
-    "that is": "that is",
-    hes: "he is",
-    "he is": "he is",
-    shes: "she is",
-    "she is": "she is",
-    its: "it is",
-    "it is": "it is",
-    whos: "who is",
-    "who is": "who is",
+    fighter: "fight",
+    fighting: "fight",
+    fought: "fight",
+    fight: "fight",
+    trojan: "trojan",
+    trojans: "trojan",
+    horse: "horse",
+    horses: "horse",
+    taming: "tame",
+    tamed: "tame",
+    tame: "tame",
     dear: "dear",
     dearest: "dear",
     beloved: "dear",
@@ -137,7 +137,7 @@ export default function App() {
     baby: "son",
     war: "war",
     battle: "war",
-    fighting: "war",
+    warfare: "war",
     fate: "fate",
     doom: "fate",
     destiny: "fate",
@@ -1572,7 +1572,7 @@ export default function App() {
   color: "var(--inputText)",
 border: "1px solid var(--inputBorder)"
                 }}
-                placeholder={selectedLineRange ? "Type the English translation for your selected mini-section..." : "Type your full English translation here. Contractions like that's, that is, who’s, and who is are treated the same."}
+                placeholder={selectedLineRange ? "Type the English translation for your selected mini-section..." : "Type your full English translation here. Contractions like that's, That’s, that is, who’s, and who is are treated the same."}
               />
               <div>
                 <button
