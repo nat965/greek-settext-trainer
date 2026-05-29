@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";import { sections } from "./texts";
+import { useState, useRef, useEffect } from "react";
+import { sections } from "./texts";
 import confetti from 'canvas-confetti';
 
 const sectionImages = {
@@ -75,7 +76,11 @@ export default function App() {
   const normalize = (str) =>
     str.normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[.,;:!?()]/g, "")
+      .replace(/[’‘`´]/g, "'")
+      .replace(/\b(that|it|he|she|who|what|where|when|why|how|there|here)'s\b/g, "$1 is")
+      .replace(/\b([a-z]+)'s\b/g, "$1s")
+      .replace(/[.,;:!?()\"“”]/g, "")
+      .replace(/\s+/g, " ")
       .toLowerCase()
       .trim();
 
@@ -84,13 +89,23 @@ export default function App() {
     "to", "of", "in", "on", "at", "by", "with", "from", "into", "onto",
     "up", "down", "over", "under", "through", "before", "after", "when",
     "while", "as", "that", "which", "who", "whom", "this", "these", "those",
-    "is", "was", "were", "be", "been", "being", "am", "are",
+    "is", "s", "was", "were", "be", "been", "being", "am", "are",
     "do", "does", "did", "has", "have", "had", "will", "would", "shall", "should",
     "i", "me", "my", "you", "your", "he", "him", "his", "she", "her", "they", "them", "their",
     "we", "us", "our", "it", "its", "not"
   ]);
 
   const FULL_MODE_CANONICAL_MAP = {
+    thats: "that is",
+    "that is": "that is",
+    hes: "he is",
+    "he is": "he is",
+    shes: "she is",
+    "she is": "she is",
+    its: "it is",
+    "it is": "it is",
+    whos: "who is",
+    "who is": "who is",
     dear: "dear",
     dearest: "dear",
     beloved: "dear",
@@ -170,6 +185,11 @@ export default function App() {
     return FULL_MODE_CANONICAL_MAP[normalized] || normalized;
   }
 
+  function tokenizeFullModeText(text) {
+    const normalized = normalize(text);
+    return normalized ? normalized.split(/\s+/) : [];
+  }
+
   function isFullModeContentWord(word) {
     const canonical = canonicalizeFullModeWord(word);
     return canonical && !FULL_MODE_STOPWORDS.has(canonical);
@@ -198,16 +218,15 @@ export default function App() {
   }
   
   function getTargetWords({ useSelection = practiceMode === "full" } = {}) {
-    const text = getTargetText({ useSelection }).trim();
-    return text ? text.split(/\s+/) : [];
+    return tokenizeFullModeText(getTargetText({ useSelection }));
   }
   const evaluateFullTranslation = () => {
     const targetWords = getTargetWords({ useSelection: true });
-    const typedWords = fullTranslationInput.trim() ? fullTranslationInput.trim().split(/\s+/) : [];
+    const typedWords = tokenizeFullModeText(fullTranslationInput);
 
     const typedMeta = typedWords.map((word, idx) => ({
       original: word,
-      normalized: normalize(word),
+      normalized: word,
       canonical: canonicalizeFullModeWord(word),
       idx,
       used: false
@@ -219,7 +238,7 @@ export default function App() {
 
     for (let i = 0; i < targetWords.length; i++) {
       const expectedOriginal = targetWords[i];
-      const expectedNormalized = normalize(expectedOriginal);
+      const expectedNormalized = expectedOriginal;
       const expectedCanonical = canonicalizeFullModeWord(expectedOriginal);
       const isContentWord = isFullModeContentWord(expectedOriginal);
 
@@ -1553,7 +1572,7 @@ export default function App() {
   color: "var(--inputText)",
 border: "1px solid var(--inputBorder)"
                 }}
-                placeholder={selectedLineRange ? "Type the English translation for your selected mini-section..." : "Type your full English translation here. Full mode focuses more on content words than exact phrasing..."}
+                placeholder={selectedLineRange ? "Type the English translation for your selected mini-section..." : "Type your full English translation here. Contractions like that's, that is, who’s, and who is are treated the same."}
               />
               <div>
                 <button
@@ -1609,7 +1628,7 @@ border: "1px solid var(--inputBorder)"
                     return (
                       <span
                         key={idx}
-                        style={{ background: "#eeeeee", color: "#666", borderRadius: "4px", padding: "2px 5px", marginRight: "3px", opacity: 0.75 }}
+                        style={{ background: "var(--neutralMarkBg)", color: "var(--mutedText)", borderRadius: "4px", padding: "2px 5px", marginRight: "3px", opacity: 0.9 }}
                         title="Function word: not strictly marked in full-translation mode"
                       >
                         {res.expected}
@@ -1619,7 +1638,7 @@ border: "1px solid var(--inputBorder)"
 
                   if (res.correct) {
                     return (
-                      <span key={idx} style={{ background: "#c8e6c9", color: "#222", borderRadius: "4px", padding: "2px 5px", marginRight: "3px" }}>
+                      <span key={idx} style={{ background: "var(--successBg)", color: "var(--text)", borderRadius: "4px", padding: "2px 5px", marginRight: "3px" }}>
                         {res.expected}
                       </span>
                     );
@@ -1627,7 +1646,7 @@ border: "1px solid var(--inputBorder)"
                     return (
                       <span
                         key={idx}
-                        style={{ background: "#ffcdd2", color: "#222", borderRadius: "4px", padding: "2px 5px", marginRight: "3px" }}
+                        style={{ background: "var(--errorBg)", color: "var(--text)", borderRadius: "4px", padding: "2px 5px", marginRight: "3px" }}
                         title={`You wrote: ${res.actual}`}
                       >
                         {res.expected}
@@ -1637,7 +1656,7 @@ border: "1px solid var(--inputBorder)"
                     return (
                       <span
                         key={idx}
-                        style={{ background: "#ffcdd2", color: "#222", borderRadius: "4px", padding: "2px 5px", marginRight: "3px", opacity: 0.7 }}
+                        style={{ background: "var(--errorBg)", color: "var(--text)", borderRadius: "4px", padding: "2px 5px", marginRight: "3px", opacity: 0.85 }}
                         title="Missing content word"
                       >
                         {res.expected}
